@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  courses   Course[]
+  gpaScale  Float   @default(4.0) // 4.0 or 10.0
+}
+
+model Course {
+  id        Int      @id @default(autoincrement())
+  name      String
+  isActive  Boolean  @default(true)
+  userId    Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  assignments Assignment[]
+}
+
+model Assignment {
+  id         Int      @id @default(autoincrement())
+  name       String
+  grade      Float    // percentage received (e.g. 92.5)
+  weight     Float    // weight in course (e.g. 20 for 20%)
+  courseId   Int
+  createdAt  DateTime @default(now())
+
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
