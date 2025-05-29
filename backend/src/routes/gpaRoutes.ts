@@ -61,18 +61,30 @@ router.get("/gpa-history", verifyToken, async (req: AuthRequest, res) => {
     },
   })
 
-  const history = courses.map((course) => {
-    const grade = calculateWeightedGPA(course.assignments)
-    const gpa = mapGradeToGpa(grade, user?.gpaScale ?? 4.0)
-    return {
+  const scale = user?.gpaScale ?? 4.0
+
+  const history = []
+  let totalGpa = 0
+  let count = 0
+
+  for (const course of courses) {
+    const weighted = calculateWeightedGPA(course.assignments)
+    const gpa = mapGradeToGpa(weighted, scale)
+
+    count += 1
+    totalGpa += gpa
+    const cumulativeGpa = parseFloat((totalGpa / count).toFixed(2))
+
+    history.push({
       course: course.name,
-      gpa,
+      gpa: cumulativeGpa,
       createdAt: course.createdAt,
-    }
-  })
+    })
+  }
 
   res.json(history)
 })
+
 
 
 
