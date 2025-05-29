@@ -34,4 +34,12 @@ const DialogDescription = ({ children }: { children: React.ReactNode }) => (
   <p className="text-sm text-muted-foreground">{children}</p>
 )
 
-export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription }
+const DialogFooter = ({ children }: { children: React.ReactNode }) => (
+  <div className="mt-6 flex justify-end gap-2">
+    {children}
+  </div>
+)
+
+
+
+export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter }
