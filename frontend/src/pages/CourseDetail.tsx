@@ -42,7 +42,7 @@ export default function CourseDetail() {
     if (!courseId || !token) return
 
     // fetch course name
-    axios.get("http://localhost:4000/api/courses", {
+    axios.get("https://scholarlog-api.onrender.com/api/courses", {
       headers: { Authorization: `Bearer ${token}` },
     }).then(res => {
       const course = res.data.find((c: any) => c.id === courseId)
@@ -55,7 +55,7 @@ export default function CourseDetail() {
 
     // fetch assignments
     axios
-      .get(`http://localhost:4000/api/assignments/${courseId}`, {
+      .get(`https://scholarlog-api.onrender.com/api/assignments/${courseId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setAssignments(res.data))
@@ -64,7 +64,7 @@ export default function CourseDetail() {
   const handleAdd = async () => {
     try {
       await axios.post(
-        "http://localhost:4000/api/assignments",
+        "https://scholarlog-api.onrender.com/api/assignments",
         {
           name,
           grade: parseFloat(grade),
@@ -78,7 +78,7 @@ export default function CourseDetail() {
       setName("")
       setGrade("")
       setWeight("")
-      const res = await axios.get(`http://localhost:4000/api/assignments/${courseId}`, {
+      const res = await axios.get(`https://scholarlog-api.onrender.com/api/assignments/${courseId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       setAssignments(res.data)
@@ -127,7 +127,7 @@ export default function CourseDetail() {
 
               try {
                 await axios.put(
-                  `http://localhost:4000/api/assignments/${editTarget.id}`,
+                  `https://scholarlog-api.onrender.com/api/assignments/${editTarget.id}`,
                   {
                     name: editTarget.name,
                     grade: editTarget.grade,
@@ -139,7 +139,7 @@ export default function CourseDetail() {
                 )
 
                 const res = await axios.get(
-                  `http://localhost:4000/api/assignments/${courseId}`,
+                  `https://scholarlog-api.onrender.com/api/assignments/${courseId}`,
                   {
                     headers: { Authorization: `Bearer ${token}` },
                   }
@@ -178,7 +178,7 @@ export default function CourseDetail() {
           onClick={async () => {
             try {
               await axios.put(
-                `http://localhost:4000/api/courses/${courseId}`,
+                `https://scholarlog-api.onrender.com/api/courses/${courseId}`,
                 {
                   name: editCourseName,
                   isActive: editCourseStatus,
@@ -215,7 +215,7 @@ export default function CourseDetail() {
                 <Button
                   onClick={async () => {
                     try {
-                      await axios.delete(`http://localhost:4000/api/assignments/${a.id}`, {
+                      await axios.delete(`https://scholarlog-api.onrender.com/api/assignments/${a.id}`, {
                         headers: { Authorization: `Bearer ${token}` },
                       })
                       setAssignments((prev) => prev.filter((x) => x.id !== a.id))

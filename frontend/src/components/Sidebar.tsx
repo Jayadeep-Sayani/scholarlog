@@ -24,7 +24,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     useEffect(() => {
         if (!token) return
         axios
-            .get("http://localhost:4000/api/auth/me", {
+            .get("https://scholarlog-api.onrender.com/api/auth/me", {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => {
@@ -36,7 +36,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     useEffect(() => {
         if (!token) return
         axios
-            .get("http://localhost:4000/api/courses", {
+            .get("https://scholarlog-api.onrender.com/api/courses", {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => setCourses(res.data))

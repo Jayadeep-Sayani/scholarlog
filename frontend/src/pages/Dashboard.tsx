@@ -17,14 +17,14 @@ export default function Dashboard() {
     if (!token) return
 
     axios
-      .get("http://localhost:4000/api/user/gpa-history", {
+      .get("https://scholarlog-api.onrender.com/api/user/gpa-history", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setGpaHistory(res.data))
       .catch((err) => console.error("Failed to load GPA history", err))
 
     axios
-      .get("http://localhost:4000/api/user/gpa", {
+      .get("https://scholarlog-api.onrender.com/api/user/gpa", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setGpaScale(res.data.scale))

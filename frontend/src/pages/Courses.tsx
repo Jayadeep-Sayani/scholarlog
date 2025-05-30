@@ -38,7 +38,7 @@ export default function Courses() {
 
   const fetchUserGpa = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/user/gpa", {
+      const res = await axios.get("https://scholarlog-api.onrender.com/api/user/gpa", {
         headers: { Authorization: `Bearer ${token}` },
       })
       setUserGpa(res.data.gpa)
@@ -55,7 +55,7 @@ export default function Courses() {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:4000/api/courses/${id}`, {
+      await axios.delete(`https://scholarlog-api.onrender.com/api/courses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       setCourses((prev) => prev.filter((c) => c.id !== id))
@@ -67,11 +67,11 @@ export default function Courses() {
   const handleCreate = async (name: string, isActive: boolean) => {
     try {
       await axios.post(
-        "http://localhost:4000/api/courses",
+        "https://scholarlog-api.onrender.com/api/courses",
         { name, isActive },
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      const res = await axios.get("http://localhost:4000/api/courses/with-grade", {
+      const res = await axios.get("https://scholarlog-api.onrender.com/api/courses/with-grade", {
         headers: { Authorization: `Bearer ${token}` },
       })
       setCourses(res.data)
@@ -84,7 +84,7 @@ export default function Courses() {
     if (!token) return
     setIsLoading(true)
     axios
-      .get("http://localhost:4000/api/courses/with-grade", {
+      .get("https://scholarlog-api.onrender.com/api/courses/with-grade", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setCourses(res.data))
@@ -121,7 +121,7 @@ export default function Courses() {
                   const newScale = parseFloat(e.target.value)
                   axios
                     .put(
-                      "http://localhost:4000/api/user/settings/scale",
+                      "https://scholarlog-api.onrender.com/api/user/settings/scale",
                       { scale: newScale },
                       { headers: { Authorization: `Bearer ${token}` } }
                     )
