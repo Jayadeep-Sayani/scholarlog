@@ -34,7 +34,6 @@ export default function GpaTrendChart({ data, gpaScale }: Props) {
                         labelStyle={{ color: "#333", fontWeight: 500 }}
                     />
                     <Line
-                        type="monotone"
                         dataKey="gpa"
                         stroke="#6366f1"
                         strokeWidth={2}
