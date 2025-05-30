@@ -35,8 +35,6 @@ export default function CourseDetail() {
   const [grade, setGrade] = useState("")
   const [weight, setWeight] = useState("")
   const [editTarget, setEditTarget] = useState<Assignment | null>(null)
-  const [editCourseName, setEditCourseName] = useState("")
-  const [editCourseStatus, setEditCourseStatus] = useState(true)
 
 
 
@@ -50,9 +48,6 @@ export default function CourseDetail() {
       const course = res.data.find((c: any) => c.id === courseId)
       if (!course) return navigate("/courses")
       setCourseName(course.name)
-      setEditCourseName(course.name)
-      setEditCourseStatus(course.isActive)
-
     })
 
     // fetch assignments
@@ -166,47 +161,7 @@ export default function CourseDetail() {
       </Dialog>
 
       <div className="space-y-2">
-        <Input
-          value={editCourseName}
-          onChange={(e) => setEditCourseName(e.target.value)}
-          className="text-xl font-bold"
-        />
-
-        <select
-          value={editCourseStatus ? "active" : "completed"}
-          onChange={(e) =>
-            setEditCourseStatus(e.target.value === "active")
-          }
-          className="border rounded px-2 py-1"
-        >
-          <option value="active">Active</option>
-          <option value="completed">Completed</option>
-        </select>
-
-        <Button
-          onClick={async () => {
-            try {
-              await axios.put(
-                `https://scholarlog-api.onrender.com/api/courses/${courseId}`,
-                {
-                  name: editCourseName,
-                  isActive: editCourseStatus,
-                },
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              )
-              setCourseName(editCourseName)
-              
-              // Refresh courses to update sidebar
-              await fetchCourses()
-            } catch (err) {
-              console.error("Failed to update course:", err)
-            }
-          }}
-        >
-          Save Changes
-        </Button>
+        <h1 className="text-2xl font-bold">{courseName}</h1>
       </div>
 
 

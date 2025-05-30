@@ -25,14 +25,8 @@ export default function CourseCard({ course, onDelete, onUpdate }: Props) {
 
 
     const handleCourseClick = (e: React.MouseEvent) => {
-        // If we have an onUpdate function, we're using the edit modal approach
-        // Otherwise, navigate to the course details page
-        if (onUpdate) {
-            // Just show the card without navigation
-            return;
-        } else {
-            navigate(`/courses/${course.id}`);
-        }
+        // Always navigate to the course details page when clicking on the card
+        navigate(`/courses/${course.id}`);
     };
 
     return (
