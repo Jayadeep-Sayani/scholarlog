@@ -1,5 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts"
-
+import { useMemo } from "react"
 
 type Props = {
     data: { course: string; gpa: number; createdAt: string }[],
@@ -7,15 +7,49 @@ type Props = {
 }
 
 export default function GpaTrendChart({ data, gpaScale }: Props) {
+    // Generate sample data when there are 0 or 1 courses
+    const chartData = useMemo(() => {
+        if (data.length > 1) {
+            return data; // Use actual data if we have more than 1 course
+        }
+        
+        // Create sample data for demonstration when 0 or 1 courses exist
+        const sampleData = [];
+        
+        // If we have 1 course, include it in the sample data
+        if (data.length === 1) {
+            sampleData.push(data[0]);
+        }
+        
+        // Add sample courses to show a trend
+        const sampleCourses = [
+            { course: "Sample Course 1", gpa: gpaScale * 0.8, createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString() },
+            { course: "Sample Course 2", gpa: gpaScale * 0.7, createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString() },
+            { course: "Sample Course 3", gpa: gpaScale * 0.85, createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() },
+        ];
+        
+        // Only add sample courses if we have 0 actual courses
+        if (data.length === 0) {
+            return sampleCourses;
+        } else {
+            // If we have 1 course, add some sample courses after it
+            return [...sampleData, ...sampleCourses.slice(1)];
+        }
+    }, [data, gpaScale]);
 
     return (
         <div className="bg-white rounded-xl shadow p-4 w-full max-w-3xl mx-auto">
             <h2 className="text-lg font-semibold">
                 GPA Trend (Scale {gpaScale})
+                {data.length <= 1 && (
+                    <span className="text-xs text-gray-500 ml-2">
+                        (Sample data shown for demonstration)
+                    </span>
+                )}
             </h2>
 
             <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data}>
+                <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
                     <XAxis
                         dataKey="course"
@@ -43,7 +77,6 @@ export default function GpaTrendChart({ data, gpaScale }: Props) {
                 </LineChart>
             </ResponsiveContainer>
         </div>
-
     )
 }
 

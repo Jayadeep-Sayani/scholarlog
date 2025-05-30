@@ -35,8 +35,7 @@ export default function Dashboard() {
   return (
     <Sidebar>
       <div className="p-6 space-y-4">
-        {gpaHistory.length > 0 && <GpaTrendChart data={gpaHistory} gpaScale={gpaScale} />
-        }
+        <GpaTrendChart data={gpaHistory} gpaScale={gpaScale} />
       </div>
     </Sidebar>
   )
