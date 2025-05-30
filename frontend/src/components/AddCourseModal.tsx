@@ -15,6 +15,7 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
   const [open, setOpen] = useState(false)
   const [name, setName] = useState("")
   const [isActive, setIsActive] = useState(defaultActive)
+  const [grade, setGrade] = useState("")
 
   // Update isActive when modal opens to use current defaultActive value
   useEffect(() => {
@@ -25,8 +26,13 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
 
   const handleSubmit = () => {
     if (!name.trim()) return
+    if (!isActive && !grade.trim()) {
+      alert("Final grade is required for completed courses.")
+      return
+    }
     onCreate(name, isActive)
     setName("")
+    setGrade("") // Reset grade
     setIsActive(defaultActive) // Reset to the default value based on current tab
     setOpen(false)
   }
@@ -59,6 +65,18 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
               onCheckedChange={(val) => setIsActive(val)}
             />
           </div>
+
+          {!isActive && (
+            <div>
+              <Label htmlFor="grade">Final Grade</Label>
+              <Input
+                id="grade"
+                placeholder="e.g. 85"
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         <DialogFooter>
