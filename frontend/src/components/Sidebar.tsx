@@ -19,7 +19,10 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     const { token } = useAuth()
     const { activeCourses } = useCourses()
     const [user, setUser] = useState("")
-    const [isCoursesOpen, setIsCoursesOpen] = useState(false)
+    const [isCoursesOpen, setIsCoursesOpen] = useState(() => {
+        const saved = localStorage.getItem('coursesMenuOpen')
+        return saved ? JSON.parse(saved) : false
+    })
 
     useEffect(() => {
         if (!token) return
@@ -32,6 +35,11 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 setUser(res.data.user.email)
             })
     }, [token])
+
+    // Save isCoursesOpen to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('coursesMenuOpen', JSON.stringify(isCoursesOpen))
+    }, [isCoursesOpen])
 
     const isActive = (path: string) => pathname === path
 
