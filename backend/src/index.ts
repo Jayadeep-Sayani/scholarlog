@@ -23,3 +23,10 @@ app.get('/', (req: Request, res: Response) => {
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://your-frontend.vercel.app"], // Add your actual Vercel domain here
+    credentials: true, // Optional, useful if using cookies/auth
+  })
+)
