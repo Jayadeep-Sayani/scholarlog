@@ -4,6 +4,9 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { Button } from "./ui/button"
 import { Switch } from "./ui/switch"
+import axios from "axios"
+import { useAuth } from "../context/AuthContext"
+import { useCourses } from "../context/CourseContext"
 
 type Props = {
   onCreate: (name: string, isActive: boolean) => void
@@ -16,6 +19,8 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
   const [name, setName] = useState("")
   const [isActive, setIsActive] = useState(defaultActive)
   const [grade, setGrade] = useState("")
+  const { token } = useAuth()
+  const { fetchCourses } = useCourses()
 
   // Update isActive when modal opens to use current defaultActive value
   useEffect(() => {
@@ -24,17 +29,48 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
     }
   }, [open, defaultActive])
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim()) return
     if (!isActive && !grade.trim()) {
       alert("Final grade is required for completed courses.")
       return
     }
-    onCreate(name, isActive)
-    setName("")
-    setGrade("") // Reset grade
-    setIsActive(defaultActive) // Reset to the default value based on current tab
-    setOpen(false)
+
+    // Create the course
+    try {
+      const response = await axios.post(
+        "https://scholarlog-api.onrender.com/api/courses",
+        { name, isActive },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+
+      // If creating a completed course, add the final grade assignment
+      if (!isActive && grade.trim()) {
+        await axios.post(
+          "https://scholarlog-api.onrender.com/api/assignments",
+          {
+            name: "Final Grade",
+            grade: parseFloat(grade),
+            weight: 100,
+            courseId: response.data.id,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+      }
+
+      // Refresh courses to update the display
+      await fetchCourses()
+      
+      // Reset form
+      setName("")
+      setGrade("")
+      setIsActive(defaultActive)
+      setOpen(false)
+    } catch (err) {
+      console.error("Failed to create course:", err)
+    }
   }
 
   return (
@@ -68,10 +104,11 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
 
           {!isActive && (
             <div>
-              <Label htmlFor="grade">Final Grade</Label>
+              <Label htmlFor="grade">Final Grade (%)</Label>
               <Input
                 id="grade"
-                placeholder="e.g. 85"
+                type="number"
+                placeholder="Enter final grade"
                 value={grade}
                 onChange={(e) => setGrade(e.target.value)}
               />
