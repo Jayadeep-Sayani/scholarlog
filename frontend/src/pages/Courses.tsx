@@ -2,6 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { useAuth } from "../context/AuthContext"
+import { useCourses } from "../context/CourseContext"
 import { Button } from "../components/ui/button"
 import { useNavigate } from "react-router-dom"
 import CourseCard from "../components/CourseCard"
@@ -27,9 +28,9 @@ type Course = {
 }
 
 export default function Courses() {
-  const [courses, setCourses] = useState<Course[]>([])
   const [tab, setTab] = useState("active")
   const { token } = useAuth()
+  const { courses, setCourses, fetchCourses, activeCourses, completedCourses } = useCourses()
   const [userGpa, setUserGpa] = useState<number | null>(null)
   const [gpaScale, setGpaScale] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -58,6 +59,7 @@ export default function Courses() {
       await axios.delete(`https://scholarlog-api.onrender.com/api/courses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
+      // Update courses in context
       setCourses((prev) => prev.filter((c) => c.id !== id))
     } catch (err) {
       console.error("Failed to delete course:", err)
@@ -71,10 +73,8 @@ export default function Courses() {
         { name, isActive },
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      const res = await axios.get("https://scholarlog-api.onrender.com/api/courses/with-grade", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      setCourses(res.data)
+      // Fetch updated courses using the context method
+      await fetchCourses()
     } catch (err) {
       console.error("Error creating course:", err)
     }
@@ -83,20 +83,14 @@ export default function Courses() {
   useEffect(() => {
     if (!token) return
     setIsLoading(true)
-    axios
-      .get("https://scholarlog-api.onrender.com/api/courses/with-grade", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setCourses(res.data))
-      .catch((err) => console.error("Failed to fetch courses:", err))
-      .finally(() => setIsLoading(false))
+    fetchCourses()
+      .then(() => setIsLoading(false))
+      .catch(() => setIsLoading(false))
   }, [token])
 
-  const filtered = courses.filter((course) => {
-    if (tab === "active") return course.isActive
-    if (tab === "completed") return !course.isActive
-    return true
-  })
+  const filtered = tab === "active" ? activeCourses : 
+                 tab === "completed" ? completedCourses : 
+                 courses
 
   if (isLoading) {
     return (

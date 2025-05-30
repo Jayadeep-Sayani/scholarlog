@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useAuth } from "../context/AuthContext"
+import { useCourses } from "../context/CourseContext"
 import { Input } from "../components/ui/input"
 import { Button } from "../components/ui/button"
 import {
@@ -25,6 +26,7 @@ export default function CourseDetail() {
   const { id } = useParams()
   const courseId = Number(id)
   const { token } = useAuth()
+  const { fetchCourses } = useCourses()
   const navigate = useNavigate()
 
   const [assignments, setAssignments] = useState<Assignment[]>([])
@@ -82,6 +84,9 @@ export default function CourseDetail() {
         headers: { Authorization: `Bearer ${token}` },
       })
       setAssignments(res.data)
+      
+      // Refresh courses to update sidebar
+      await fetchCourses()
     } catch (err) {
       console.error("Failed to add assignment:", err)
     }
@@ -145,6 +150,10 @@ export default function CourseDetail() {
                   }
                 )
                 setAssignments(res.data)
+                
+                // Refresh courses to update sidebar
+                await fetchCourses()
+                
                 setEditTarget(null)
               } catch (err) {
                 console.error("Failed to update assignment:", err)
@@ -188,6 +197,9 @@ export default function CourseDetail() {
                 }
               )
               setCourseName(editCourseName)
+              
+              // Refresh courses to update sidebar
+              await fetchCourses()
             } catch (err) {
               console.error("Failed to update course:", err)
             }
@@ -219,6 +231,9 @@ export default function CourseDetail() {
                         headers: { Authorization: `Bearer ${token}` },
                       })
                       setAssignments((prev) => prev.filter((x) => x.id !== a.id))
+                      
+                      // Refresh courses to update sidebar
+                      await fetchCourses()
                     } catch (err) {
                       console.error("Failed to delete:", err)
                     }

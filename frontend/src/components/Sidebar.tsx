@@ -2,6 +2,7 @@
 import { Link, useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAuth } from "../context/AuthContext"
+import { useCourses } from "../context/CourseContext"
 import axios from "axios"
 import { Button } from "../components/ui/button"
 import { LayoutDashboard, BookOpen, User } from "lucide-react" // Optional icon
@@ -16,7 +17,7 @@ import {
 export default function SidebarLayout({ children }: { children: React.ReactNode }) {
     const { pathname } = useLocation()
     const { token, logout } = useAuth()
-    const [courses, setCourses] = useState<{ id: number; name: string, isActive: boolean }[]>([])
+    const { activeCourses } = useCourses()
     const [user, setUser] = useState("")
     const [showDropdown, setShowDropdown] = useState(false)
 
@@ -31,15 +32,6 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 console.log("User data:", res.data)
                 setUser(res.data.user.email)
             })
-    }, [token])
-
-    useEffect(() => {
-        if (!token) return
-        axios
-            .get("https://scholarlog-api.onrender.com/api/courses", {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((res) => setCourses(res.data))
     }, [token])
 
     const isActive = (path: string) => pathname === path
@@ -64,7 +56,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                             Dashboard
                         </Link>
 
-                        <Accordion type="single" collapsible defaultValue={courses.length ? "courses" : undefined}>
+                        <Accordion type="single" collapsible defaultValue={activeCourses.length ? "courses" : undefined}>
                             <AccordionItem value="courses">
                                 <AccordionTrigger className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100">
                                     <BookOpen className="w-4 h-4 mr-4" />
@@ -78,20 +70,18 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                                     >
                                         All Courses
                                     </Link>
-                                    {courses
-                                        .filter((c) => c.isActive)
-                                        .map((c) => (
-                                            <Link
-                                                key={c.id}
-                                                to={`/courses/${c.id}`}
-                                                className={`block px-3 py-2 text-muted-foreground hover:bg-gray-100 ${pathname.includes(`/courses/${c.id}`)
-                                                    ? "bg-gray-100 text-foreground"
-                                                    : "hover:bg-gray-10"
-                                                    }`}
-                                            >
-                                                {c.name}
-                                            </Link>
-                                        ))}
+                                    {activeCourses.map((c) => (
+                                        <Link
+                                            key={c.id}
+                                            to={`/courses/${c.id}`}
+                                            className={`block px-3 py-2 text-muted-foreground hover:bg-gray-100 ${pathname.includes(`/courses/${c.id}`)
+                                                ? "bg-gray-100 text-foreground"
+                                                : "hover:bg-gray-10"
+                                                }`}
+                                        >
+                                            {c.name}
+                                        </Link>
+                                    ))}
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
@@ -128,8 +118,8 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                                     {user || "User"}
                                 </span>
                                 <span className="text-muted-foreground text-xs">
-                                    {courses.filter((c) => c.isActive).length} active course
-                                    {courses.filter((c) => c.isActive).length !== 1 && "s"}
+                                    {activeCourses.length} active course
+                                    {activeCourses.length !== 1 && "s"}
                                 </span>
                             </div>
                         </div>
