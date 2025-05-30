@@ -19,7 +19,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     const { token } = useAuth()
     const { activeCourses } = useCourses()
     const [user, setUser] = useState("")
-    const [showDropdown, setShowDropdown] = useState(false)
+    const [isCoursesOpen, setIsCoursesOpen] = useState(false)
 
     useEffect(() => {
         if (!token) return
@@ -52,7 +52,12 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                             Dashboard
                         </Link>
 
-                        <Accordion type="single" collapsible defaultValue={activeCourses.length ? "courses" : undefined}>
+                        <Accordion 
+                            type="single" 
+                            collapsible 
+                            value={isCoursesOpen ? "courses" : undefined}
+                            onValueChange={(value) => setIsCoursesOpen(value === "courses")}
+                        >
                             <AccordionItem value="courses">
                                 <AccordionTrigger className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100">
                                     <BookOpen className="w-4 h-4 mr-4" />
