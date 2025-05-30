@@ -8,12 +8,13 @@ import { Switch } from "./ui/switch"
 type Props = {
   onCreate: (name: string, isActive: boolean) => void
   trigger: React.ReactNode
+  defaultActive?: boolean
 }
 
-export default function AddCourseModal({ onCreate, trigger }: Props) {
+export default function AddCourseModal({ onCreate, trigger, defaultActive = true }: Props) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState("")
-  const [isActive, setIsActive] = useState(true)
+  const [isActive, setIsActive] = useState(defaultActive)
 
   const handleSubmit = () => {
     if (!name.trim()) return

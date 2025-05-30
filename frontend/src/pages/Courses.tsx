@@ -104,9 +104,7 @@ export default function Courses() {
       .catch(() => setIsLoading(false))
   }, [token])
 
-  const filtered = tab === "active" ? activeCourses : 
-                 tab === "completed" ? completedCourses : 
-                 courses
+  const filtered = tab === "active" ? activeCourses : completedCourses
 
   if (isLoading) {
     return (
@@ -150,7 +148,6 @@ export default function Courses() {
             <TabsList>
               <TabsTrigger value="active">Active</TabsTrigger>
               <TabsTrigger value="completed">Completed</TabsTrigger>
-              <TabsTrigger value="all">All</TabsTrigger>
             </TabsList>
 
             <TabsContent value={tab}>
@@ -161,6 +158,7 @@ export default function Courses() {
                   <AddCourseModal
                     onCreate={handleCreate}
                     trigger={<Button className="mt-4">Add Course</Button>}
+                    defaultActive={tab === "active"}
                   />
                 </div>
               ) : (
@@ -184,6 +182,7 @@ export default function Courses() {
                         <span className="text-sm mt-1">Add Course</span>
                       </button>
                     }
+                    defaultActive={tab === "active"}
                   />
                 </div>
               )}
