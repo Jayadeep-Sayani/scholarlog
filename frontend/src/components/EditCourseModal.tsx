@@ -4,6 +4,8 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { Button } from "./ui/button"
 import { Switch } from "./ui/switch"
+import axios from "axios"
+import { useAuth } from "../context/AuthContext"
 
 type Course = {
   id: number
@@ -22,16 +24,46 @@ type Props = {
 export default function EditCourseModal({ course, onUpdate, open, onOpenChange }: Props) {
   const [name, setName] = useState(course.name)
   const [isActive, setIsActive] = useState(course.isActive)
+  const [finalGrade, setFinalGrade] = useState("")
+  const { token } = useAuth()
 
   // Update local state when course prop changes
   useEffect(() => {
     setName(course.name)
     setIsActive(course.isActive)
+    setFinalGrade("")
   }, [course])
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim()) return
+    if (!isActive && !finalGrade.trim()) {
+      alert("Please enter a final grade when marking a course as completed")
+      return
+    }
+
+    // First update the course status
     onUpdate(course.id, name, isActive)
+
+    // If marking as completed, add the final grade assignment
+    if (!isActive && finalGrade.trim()) {
+      try {
+        await axios.post(
+          "https://scholarlog-api.onrender.com/api/assignments",
+          {
+            name: "Final Grade",
+            grade: parseFloat(finalGrade),
+            weight: 100,
+            courseId: course.id,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+      } catch (err) {
+        console.error("Failed to add final grade assignment:", err)
+      }
+    }
+
     onOpenChange(false)
   }
 
@@ -61,6 +93,19 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
               onCheckedChange={(val) => setIsActive(val)}
             />
           </div>
+
+          {!isActive && (
+            <div>
+              <Label htmlFor="finalGrade">Final Grade (%)</Label>
+              <Input
+                id="finalGrade"
+                type="number"
+                placeholder="Enter final grade"
+                value={finalGrade}
+                onChange={(e) => setFinalGrade(e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         <DialogFooter>
