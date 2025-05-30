@@ -47,6 +47,25 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
     // If marking as completed, add the final grade assignment
     if (!isActive && finalGrade.trim()) {
       try {
+        // First delete all existing assignments
+        const assignments = await axios.get(
+          `https://scholarlog-api.onrender.com/api/assignments/${course.id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+
+        // Delete each assignment
+        for (const assignment of assignments.data) {
+          await axios.delete(
+            `https://scholarlog-api.onrender.com/api/assignments/${assignment.id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          )
+        }
+
+        // Add the final grade assignment
         await axios.post(
           "https://scholarlog-api.onrender.com/api/assignments",
           {
@@ -59,11 +78,11 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
             headers: { Authorization: `Bearer ${token}` },
           }
         )
+
+        console.log("Final grade assignment added")
       } catch (err) {
         console.error("Failed to add final grade assignment:", err)
       }
-
-      console.log("Final grade assignment added")
     }
 
     onOpenChange(false)
