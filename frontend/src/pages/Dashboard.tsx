@@ -10,8 +10,21 @@ export default function Dashboard() {
   const [gpaHistory, setGpaHistory] = useState([])
   const { token } = useAuth()
   const [gpaScale, setGpaScale] = useState<number>(4.0)
+  const [userGpa, setUserGpa] = useState<number | null>(null)
 
 
+
+  const fetchUserGpa = async () => {
+    try {
+      const res = await axios.get("https://scholarlog-api.onrender.com/api/user/gpa", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      setUserGpa(res.data.gpa)
+      setGpaScale(res.data.scale)
+    } catch (err) {
+      console.error("Failed to fetch GPA", err)
+    }
+  }
 
   useEffect(() => {
     if (!token) return
@@ -22,19 +35,25 @@ export default function Dashboard() {
       })
       .then((res) => setGpaHistory(res.data))
       .catch((err) => console.error("Failed to load GPA history", err))
-
-    axios
-      .get("https://scholarlog-api.onrender.com/api/user/gpa", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setGpaScale(res.data.scale))
-      .catch((err) => console.error("Failed to load GPA scale", err))
+    
+    fetchUserGpa()
   }, [token])
 
 
   return (
     <Sidebar>
       <div className="p-6 space-y-4">
+        <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
+        
+        {userGpa !== null && (
+          <div className="mb-6 px-4 py-3 bg-white rounded-xl shadow flex items-center justify-between max-w-md">
+            <p className="text-sm text-muted-foreground">Your Overall GPA</p>
+            <p className="text-xl font-bold text-black">
+              {userGpa.toFixed(2)} / {gpaScale}
+            </p>
+          </div>
+        )}
+        
         <GpaTrendChart data={gpaHistory} gpaScale={gpaScale} />
       </div>
     </Sidebar>

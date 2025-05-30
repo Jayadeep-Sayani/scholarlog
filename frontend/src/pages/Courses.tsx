@@ -80,6 +80,22 @@ export default function Courses() {
     }
   }
 
+  const handleUpdate = async (id: number, name: string, isActive: boolean) => {
+    try {
+      await axios.put(
+        `https://scholarlog-api.onrender.com/api/courses/${id}`,
+        { name, isActive },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      // Update courses in context
+      setCourses((prev) => 
+        prev.map((c) => (c.id === id ? { ...c, name, isActive } : c))
+      )
+    } catch (err) {
+      console.error("Failed to update course:", err)
+    }
+  }
+
   useEffect(() => {
     if (!token) return
     setIsLoading(true)
@@ -130,15 +146,6 @@ export default function Courses() {
             </div>
           )}
 
-          {userGpa !== null && (
-            <div className="mb-6 px-4 py-3 bg-white rounded-xl shadow flex items-center justify-between max-w-md">
-              <p className="text-sm text-muted-foreground">Your Overall GPA</p>
-              <p className="text-xl font-bold text-black">
-                {userGpa.toFixed(2)} / {gpaScale}
-              </p>
-            </div>
-          )}
-
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
               <TabsTrigger value="active">Active</TabsTrigger>
@@ -159,7 +166,12 @@ export default function Courses() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {filtered.map((course) => (
-                    <CourseCard key={course.id} course={course} onDelete={handleDelete} />
+                    <CourseCard 
+                      key={course.id} 
+                      course={course} 
+                      onDelete={handleDelete} 
+                      onUpdate={handleUpdate}
+                    />
                   ))}
 
                   <AddCourseModal
