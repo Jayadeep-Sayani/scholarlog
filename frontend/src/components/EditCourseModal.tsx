@@ -62,6 +62,8 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
       } catch (err) {
         console.error("Failed to add final grade assignment:", err)
       }
+
+      console.log("Final grade assignment added")
     }
 
     onOpenChange(false)
