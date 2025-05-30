@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
@@ -16,11 +16,18 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
   const [name, setName] = useState("")
   const [isActive, setIsActive] = useState(defaultActive)
 
+  // Update isActive when modal opens to use current defaultActive value
+  useEffect(() => {
+    if (open) {
+      setIsActive(defaultActive)
+    }
+  }, [open, defaultActive])
+
   const handleSubmit = () => {
     if (!name.trim()) return
     onCreate(name, isActive)
     setName("")
-    setIsActive(true)
+    setIsActive(defaultActive) // Reset to the default value based on current tab
     setOpen(false)
   }
 
