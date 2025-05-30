@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
 import axios from "axios"
 import { Button } from "../components/ui/button"
-import { LayoutDashboard, BookOpen, User } from "lucide-react" // Optional icon
+import { LayoutDashboard, BookOpen, Settings } from "lucide-react" // Optional icon
 import { Avatar, AvatarFallback } from "../components/ui/avatar"
 import {
     Accordion,
@@ -16,11 +16,10 @@ import {
 
 export default function SidebarLayout({ children }: { children: React.ReactNode }) {
     const { pathname } = useLocation()
-    const { token, logout } = useAuth()
+    const { token } = useAuth()
     const { activeCourses } = useCourses()
     const [user, setUser] = useState("")
     const [showDropdown, setShowDropdown] = useState(false)
-
 
     useEffect(() => {
         if (!token) return
@@ -35,9 +34,6 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     }, [token])
 
     const isActive = (path: string) => pathname === path
-
-    console.log(user)
-
 
     return (
         <div className="flex min-h-screen">
@@ -85,29 +81,22 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
+
+                        <Link
+                            to="/settings"
+                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/settings") ? "bg-gray-200" : "hover:bg-gray-100"
+                                }`}
+                        >
+                            <Settings className="w-4 h-4 mr-4" />
+                            Settings
+                        </Link>
                     </nav>
                 </div>
 
                 {/* Avatar Section Stuck to Bottom */}
                 {token && (
-                    <div className="relative mt-6">
-                        {/* Dropdown ABOVE the avatar */}
-                        {showDropdown && (
-                            <div className="absolute left-[50%] translate-x-[-50%] bottom-full border bg-white z-10 w-[100%]">
-                                <button
-                                    onClick={logout}
-                                    className="w-full px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition"
-                                >
-                                    Log out
-                                </button>
-                            </div>
-                        )}
-
-                        {/* Avatar Block */}
-                        <div
-                            className={`flex items-center gap-3 p-3 border bg-muted cursor-pointer ${showDropdown ? "border-t-0" : ""}`}
-                            onClick={() => setShowDropdown((prev) => !prev)}
-                        >
+                    <div className="mt-6">
+                        <div className="flex items-center gap-3 p-3 border bg-muted">
                             <Avatar className="h-8 w-8 bg-gray-200 text-center text-sm font-bold">
                                 <AvatarFallback>
                                     {user && user.length > 0 ? user[0].toUpperCase() : "U"}
@@ -125,10 +114,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                         </div>
                     </div>
                 )}
-
-
             </aside>
-
 
             {/* Main Content */}
             <main className="flex-1 bg-gray-50">{children}</main>

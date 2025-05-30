@@ -120,30 +120,6 @@ export default function Courses() {
         <div className="p-6">
           <h1 className="text-3xl font-bold mb-4">Your Courses</h1>
 
-          {gpaScale !== null && (
-            <div className="flex items-center gap-2 mb-8">
-              <label className="text-sm text-muted-foreground">GPA Scale:</label>
-              <select
-                value={gpaScale}
-                onChange={(e) => {
-                  const newScale = parseFloat(e.target.value)
-                  axios
-                    .put(
-                      "https://scholarlog-api.onrender.com/api/user/settings/scale",
-                      { scale: newScale },
-                      { headers: { Authorization: `Bearer ${token}` } }
-                    )
-                    .then(() => fetchUserGpa())
-                    .catch((err) => console.error("Failed to update scale", err))
-                }}
-                className="border rounded-md px-2 py-1 text-sm"
-              >
-                <option value={4.0}>4.0</option>
-                <option value={10.0}>10.0</option>
-              </select>
-            </div>
-          )}
-
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
               <TabsTrigger value="active">Active</TabsTrigger>

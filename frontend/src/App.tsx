@@ -6,6 +6,7 @@ import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
 import Courses from "./pages/Courses"
 import CourseDetail from "./pages/CourseDetail"
+import Settings from "./pages/Settings"
 import { PrivateRoute } from "./components/PrivateRoute"
 
 export default function App() {
@@ -41,6 +42,15 @@ export default function App() {
               element={
                 <PrivateRoute>
                   <CourseDetail />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <Settings />
                 </PrivateRoute>
               }
             />
