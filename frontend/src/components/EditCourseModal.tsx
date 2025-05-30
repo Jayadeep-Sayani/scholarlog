@@ -6,6 +6,7 @@ import { Button } from "./ui/button"
 import { Switch } from "./ui/switch"
 import axios from "axios"
 import { useAuth } from "../context/AuthContext"
+import { useCourses } from "../context/CourseContext"
 
 type Course = {
   id: number
@@ -26,6 +27,7 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
   const [isActive, setIsActive] = useState(course.isActive)
   const [finalGrade, setFinalGrade] = useState("")
   const { token } = useAuth()
+  const { fetchCourses } = useCourses()
 
   // Update local state when course prop changes
   useEffect(() => {
@@ -80,6 +82,9 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
         )
 
         console.log("Final grade assignment added")
+        
+        // Refresh courses to update the grade display
+        await fetchCourses()
       } catch (err) {
         console.error("Failed to add final grade assignment:", err)
       }
