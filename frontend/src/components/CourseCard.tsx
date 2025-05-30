@@ -49,15 +49,17 @@ export default function CourseCard({ course, onDelete }: Props) {
                 </PopoverContent>
             </Popover>
 
-            <ConfirmDeleteModal
-                open={showConfirm}
-                onClose={() => setShowConfirm(false)}
-                onConfirm={() => {
-                    onDelete(course.id)
-                    setShowConfirm(false)
-                }}
-                courseName={course.name}
-            />
+            <div onClick={(e) => e.stopPropagation()}>
+                <ConfirmDeleteModal
+                    open={showConfirm}
+                    onClose={() => setShowConfirm(false)}
+                    onConfirm={() => {
+                        onDelete(course.id)
+                        setShowConfirm(false)
+                    }}
+                    courseName={course.name}
+                />
+            </div>
 
             <div className="space-y-1">
                 <h2 className="text-xl font-semibold">{course.name}</h2>
