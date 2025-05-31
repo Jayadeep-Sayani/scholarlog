@@ -19,7 +19,7 @@ export default function AssignmentStats() {
     if (!token) return
 
     axios
-      .get("https://scholarlog-api.onrender.com/api/assignments", {
+      .get("https://scholarlog-api.onrender.com/api/upcoming-assignments", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setAssignments(res.data))
@@ -33,14 +33,14 @@ export default function AssignmentStats() {
     upcoming: assignments.filter(a => {
       const deadline = new Date(a.deadline)
       deadline.setHours(0, 0, 0, 0)
-      return deadline > today
+      return deadline > today && (a.status === 'not_started' || a.status === 'in_progress')
     }).length,
     inProgress: assignments.filter(a => a.status === 'in_progress').length,
     notStarted: assignments.filter(a => a.status === 'not_started').length,
     overdue: assignments.filter(a => {
       const deadline = new Date(a.deadline)
       deadline.setHours(0, 0, 0, 0)
-      return deadline < today
+      return deadline < today && (a.status === 'not_started' || a.status === 'in_progress')
     }).length
   }
 
