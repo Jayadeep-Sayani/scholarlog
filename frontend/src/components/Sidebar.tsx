@@ -44,9 +44,9 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     const isActive = (path: string) => pathname === path
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex h-screen overflow-hidden">
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r px-4 py-6 flex flex-col">
+            <aside className="w-64 bg-white border-r px-4 py-6 flex flex-col fixed h-screen">
                 <div className="flex-grow space-y-4">
                     <div className="text-2xl font-extrabold mb-4 ml-4">ScholarLog</div>
 
@@ -139,7 +139,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 bg-gray-50">{children}</main>
+            <main className="flex-1 bg-gray-50 ml-64 overflow-y-auto h-screen">{children}</main>
         </div>
     )
 }
