@@ -23,6 +23,7 @@ export function calculateWeightedGPA(assignments: Assignment[]): number {
 
 
 
+
 export function calculateOverallGPA(courses: Course[]): number {
   if (courses.length === 0) return 0
 
