@@ -52,9 +52,13 @@ export default function Dashboard() {
           </div>
         )}
         
+        <AssignmentStats />
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <AssignmentStats />
-          <GpaTrendChart data={gpaHistory} gpaScale={gpaScale} />
+          <div className="bg-white rounded-xl shadow p-4">
+            <h3 className="text-lg font-semibold mb-4">GPA Trend</h3>
+            <GpaTrendChart data={gpaHistory} gpaScale={gpaScale} />
+          </div>
         </div>
       </div>
     </Sidebar>

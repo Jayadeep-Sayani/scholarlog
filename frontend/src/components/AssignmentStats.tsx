@@ -57,8 +57,8 @@ export default function AssignmentStats() {
   const totalAssignments = stats.upcoming + stats.inProgress + stats.notStarted + stats.overdue
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-xl shadow p-4">
           <h3 className="text-sm text-muted-foreground">Upcoming</h3>
           <p className="text-2xl font-bold">{stats.upcoming}</p>
@@ -104,6 +104,6 @@ export default function AssignmentStats() {
           </div>
         )}
       </div>
-    </div>
+    </>
   )
 } 
