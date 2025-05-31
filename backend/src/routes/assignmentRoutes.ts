@@ -31,6 +31,7 @@ router.post("/", verifyToken, async (req: AuthRequest, res: Response) => {
       courseId,
     },
   })
+  
 
   res.status(201).json(assignment)
 })
