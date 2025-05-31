@@ -26,7 +26,7 @@ function getDueDateDisplay(deadline: string): { text: string; className: string 
   dueDate.setHours(0, 0, 0, 0);
   
   const diffTime = dueDate.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   if (diffDays < 0) {
     return { text: 'Overdue', className: 'bg-red-100 text-red-800' };
@@ -77,7 +77,9 @@ export default function Assignments() {
   };
 
   // Get today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayString = today.toISOString().split('T')[0];
 
   return (
     <SidebarLayout>
@@ -159,7 +161,7 @@ export default function Assignments() {
                     name="deadline"
                     value={formData.deadline}
                     onChange={handleChange}
-                    min={today}
+                    min={todayString}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
