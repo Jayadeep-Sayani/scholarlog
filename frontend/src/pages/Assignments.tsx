@@ -19,6 +19,28 @@ interface Assignment {
   deadline: string;
 }
 
+function getDueDateDisplay(deadline: string): { text: string; className: string } {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dueDate = new Date(deadline);
+  dueDate.setHours(0, 0, 0, 0);
+  
+  const diffTime = dueDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    return { text: 'Overdue', className: 'bg-red-100 text-red-800' };
+  } else if (diffDays === 0) {
+    return { text: 'Due today', className: 'bg-orange-100 text-orange-800' };
+  } else if (diffDays === 1) {
+    return { text: 'Due tomorrow', className: 'bg-yellow-100 text-yellow-800' };
+  } else if (diffDays <= 7) {
+    return { text: `Due in ${diffDays} days`, className: 'bg-blue-100 text-blue-800' };
+  } else {
+    return { text: `Due in ${diffDays} days`, className: 'bg-gray-100 text-gray-800' };
+  }
+}
+
 export default function Assignments() {
   const { activeCourses } = useCourses();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -61,7 +83,7 @@ export default function Assignments() {
     <SidebarLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Assignments</h1>
+          <h1 className="text-3xl font-bold">Upcoming</h1>
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
               <Button className="flex items-center gap-2">
@@ -161,31 +183,34 @@ export default function Assignments() {
             <p className="text-gray-500">No assignments added yet.</p>
           ) : (
             <div className="space-y-4">
-              {assignments.map(assignment => (
-                <div
-                  key={assignment.id}
-                  className="border border-gray-200 rounded-md p-4 hover:bg-gray-50"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium">{assignment.name}</h3>
-                      <p className="text-sm text-gray-600">
-                        Course: {activeCourses.find(c => c.id.toString() === assignment.courseId)?.name}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                        assignment.status === 'not_started' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {assignment.status === 'not_started' ? 'Not Started' : 'In Progress'}
-                      </span>
+              {assignments.map(assignment => {
+                const dueDateInfo = getDueDateDisplay(assignment.deadline);
+                return (
+                  <div
+                    key={assignment.id}
+                    className="border border-gray-200 rounded-md p-4 hover:bg-gray-50"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium">{assignment.name}</h3>
+                        <p className="text-sm text-gray-600">
+                          Course: {activeCourses.find(c => c.id.toString() === assignment.courseId)?.name}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                          assignment.status === 'not_started' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {assignment.status === 'not_started' ? 'Not Started' : 'In Progress'}
+                        </span>
+                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${dueDateInfo.className}`}>
+                          {dueDateInfo.text}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Deadline: {new Date(assignment.deadline).toLocaleDateString()}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

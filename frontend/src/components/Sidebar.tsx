@@ -66,7 +66,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                                 }`}
                         >
                             <ClipboardList className="w-4 h-4 mr-4" />
-                            Assignments
+                            Upcoming
                         </Link>
 
                         <Accordion 
