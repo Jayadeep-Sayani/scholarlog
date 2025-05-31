@@ -2,6 +2,7 @@ import { Router, Response } from "express"
 import prisma from "../utils/prisma"
 import { verifyToken, AuthRequest } from "../middleware/authMiddleware"
 import { calculateWeightedGPA } from "../utils/gpaUtils"
+import { Prisma } from "@prisma/client"
 
 const router = Router()
 
@@ -16,14 +17,17 @@ router.get("/", verifyToken, async (req: AuthRequest, res) => {
 
 // POST /courses
 router.post("/", verifyToken, async (req: AuthRequest, res: Response) => {
-  const { name, isActive } = req.body
+  const { name, isActive, credits } = req.body
+
+  const courseData = {
+    name,
+    isActive: isActive ?? true,
+    credits: credits ?? 3,
+    userId: req.userId!
+  } as Prisma.CourseUncheckedCreateInput
 
   const course = await prisma.course.create({
-    data: {
-      name,
-      isActive: isActive ?? true,
-      userId: req.userId!,
-    },
+    data: courseData
   })
 
   res.status(201).json(course)
@@ -49,22 +53,25 @@ router.delete("/:id", verifyToken, async (req: AuthRequest, res: Response) => {
 
 router.put("/:id", verifyToken, async (req: AuthRequest, res: Response) => {
   const courseId = Number(req.params.id)
-  const { name, isActive } = req.body
+  const { name, isActive, credits } = req.body
 
   if (!name || isActive === undefined) {
     res.status(400).json({ error: "Name and status are required" })
     return  
   }
 
+  const courseData = {
+    name,
+    isActive,
+    credits: credits ?? 3
+  } as Prisma.CourseUncheckedUpdateInput
+
   const updated = await prisma.course.update({
     where: {
       id: courseId,
       userId: req.userId,
     },
-    data: {
-      name,
-      isActive,
-    },
+    data: courseData
   })
 
   res.json(updated)

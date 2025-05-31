@@ -20,6 +20,7 @@ model Course {
   id        Int      @id @default(autoincrement())
   name      String
   isActive  Boolean  @default(true)
+  credits   Int      @default(3)  // Default to 3 credits
   userId    Int
   createdAt DateTime @default(now())
 

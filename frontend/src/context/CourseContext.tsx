@@ -9,6 +9,7 @@ type Course = {
   createdAt: string
   assignments?: Assignment[]
   grade?: number
+  credits: number
 }
 
 type Assignment = {

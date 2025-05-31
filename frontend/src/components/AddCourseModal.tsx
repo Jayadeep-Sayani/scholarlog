@@ -20,6 +20,7 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
   const [name, setName] = useState("")
   const [isActive, setIsActive] = useState(defaultActive)
   const [grade, setGrade] = useState("")
+  const [credits, setCredits] = useState("3")  // Default to 3 credits
   const { token } = useAuth()
   const { fetchCourses } = useCourses()
   const { toast } = useToast()
@@ -45,7 +46,7 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
     try {
       const response = await axios.post(
         "https://scholarlog-api.onrender.com/api/courses",
-        { name, isActive },
+        { name, isActive, credits: parseInt(credits) },
         { headers: { Authorization: `Bearer ${token}` } }
       )
 
@@ -71,6 +72,7 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
       // Reset form
       setName("")
       setGrade("")
+      setCredits("3")
       setIsActive(defaultActive)
       setOpen(false)
 
@@ -104,6 +106,19 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
               placeholder="e.g. Calculus I"
               value={name}
               onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="credits">Credits</Label>
+            <Input
+              id="credits"
+              type="number"
+              placeholder="Enter number of credits"
+              value={credits}
+              onChange={(e) => setCredits(e.target.value)}
+              min="1"
+              max="6"
             />
           </div>
 

@@ -26,6 +26,7 @@ type Course = {
   createdAt: string
   assignments?: Assignment[]
   grade?: number
+  credits: number
 }
 
 export default function Courses() {
@@ -96,16 +97,16 @@ export default function Courses() {
     }
   }
 
-  const handleUpdate = async (id: number, name: string, isActive: boolean) => {
+  const handleUpdate = async (id: number, name: string, isActive: boolean, credits: number) => {
     try {
       await axios.put(
         `https://scholarlog-api.onrender.com/api/courses/${id}`,
-        { name, isActive },
+        { name, isActive, credits },
         { headers: { Authorization: `Bearer ${token}` } }
       )
       // Update courses in context
       setCourses((prev) => 
-        prev.map((c) => (c.id === id ? { ...c, name, isActive } : c))
+        prev.map((c) => (c.id === id ? { ...c, name, isActive, credits } : c))
       )
       toast({
         title: "Course updated",

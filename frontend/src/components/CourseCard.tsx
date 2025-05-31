@@ -13,9 +13,10 @@ type Props = {
         name: string
         isActive: boolean
         grade?: number // optional GPA from backend
+        credits: number
     }
     onDelete: (id: number) => void
-    onUpdate?: (id: number, name: string, isActive: boolean) => void
+    onUpdate?: (id: number, name: string, isActive: boolean, credits: number) => void
 }
 
 export default function CourseCard({ course, onDelete, onUpdate }: Props) {
@@ -100,6 +101,9 @@ export default function CourseCard({ course, onDelete, onUpdate }: Props) {
                 </p>
                 <p className="text-sm">
                     Grade: <span className="font-bold">{course.grade?.toFixed(2) ?? "N/A"}%</span>
+                </p>
+                <p className="text-sm">
+                    Credits: <span className="font-bold">{course.credits}</span>
                 </p>
             </div>
         </div>

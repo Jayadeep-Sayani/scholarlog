@@ -13,11 +13,12 @@ type Course = {
   name: string
   isActive: boolean
   grade?: number
+  credits: number
 }
 
 type Props = {
   course: Course
-  onUpdate: (id: number, name: string, isActive: boolean) => void
+  onUpdate: (id: number, name: string, isActive: boolean, credits: number) => void
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -26,6 +27,7 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
   const [name, setName] = useState(course.name)
   const [isActive, setIsActive] = useState(course.isActive)
   const [finalGrade, setFinalGrade] = useState("")
+  const [credits, setCredits] = useState(course.credits.toString())
   const { token } = useAuth()
   const { fetchCourses } = useCourses()
 
@@ -34,6 +36,7 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
     setName(course.name)
     setIsActive(course.isActive)
     setFinalGrade("")
+    setCredits(course.credits.toString())
   }, [course])
 
   const handleSubmit = async () => {
@@ -44,7 +47,7 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
     }
 
     // First update the course status
-    onUpdate(course.id, name, isActive)
+    onUpdate(course.id, name, isActive, parseInt(credits))
 
     // If marking as completed, add the final grade assignment
     if (!isActive && finalGrade.trim()) {
@@ -128,6 +131,19 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
               placeholder="e.g. Calculus I"
               value={name}
               onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="credits">Credits</Label>
+            <Input
+              id="credits"
+              type="number"
+              placeholder="Enter number of credits"
+              value={credits}
+              onChange={(e) => setCredits(e.target.value)}
+              min="1"
+              max="6"
             />
           </div>
 
