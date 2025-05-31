@@ -67,6 +67,26 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
           )
         }
 
+        // Delete all upcoming assignments for this course
+        const upcomingAssignments = await axios.get(
+          "https://scholarlog-api.onrender.com/api/upcoming-assignments",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+
+        // Delete each upcoming assignment for this course
+        for (const assignment of upcomingAssignments.data) {
+          if (assignment.courseId === course.id) {
+            await axios.delete(
+              `https://scholarlog-api.onrender.com/api/upcoming-assignments/${assignment.id}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            )
+          }
+        }
+
         // Add the final grade assignment
         await axios.post(
           "https://scholarlog-api.onrender.com/api/assignments",
