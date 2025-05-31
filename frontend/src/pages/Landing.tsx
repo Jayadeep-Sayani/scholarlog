@@ -61,7 +61,7 @@ export default function Landing() {
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
                 <XAxis dataKey="semester" stroke="#888" style={{ fontSize: "12px" }} />
                 <YAxis domain={[0, 4.0]} stroke="#888" style={{ fontSize: "12px" }} />
-                <Line dataKey="gpa" stroke="#6366f1" strokeWidth={2} dot />
+                <Line dataKey="gpa" stroke="#6366f2" strokeWidth={2} dot />
               </LineChart>
             </ResponsiveContainer>
           </div>
