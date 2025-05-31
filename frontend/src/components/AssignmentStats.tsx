@@ -2,6 +2,9 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { useAuth } from "../context/AuthContext"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts"
+import { Button } from "./ui/button"
+import { Plus } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 interface Assignment {
   id: number
@@ -14,6 +17,7 @@ interface Assignment {
 export default function AssignmentStats() {
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const { token } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!token) return
@@ -50,6 +54,8 @@ export default function AssignmentStats() {
     { name: 'Overdue', value: stats.overdue }
   ]
 
+  const totalAssignments = stats.upcoming + stats.inProgress + stats.notStarted + stats.overdue
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -71,22 +77,32 @@ export default function AssignmentStats() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow p-4">
+      <div className="bg-white rounded-xl shadow p-4 relative">
         <h3 className="text-lg font-semibold mb-4">Assignment Status</h3>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
-              <XAxis dataKey="name" stroke="#888" style={{ fontSize: "12px" }} />
-              <YAxis stroke="#888" style={{ fontSize: "12px" }} />
-              <Tooltip
-                contentStyle={{ backgroundColor: "#fff", border: "1px solid #ccc" }}
-                labelStyle={{ color: "#333", fontWeight: 500 }}
-              />
-              <Bar dataKey="value" fill="#6366f1" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {totalAssignments === 0 ? (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl">
+            <p className="text-muted-foreground mb-4">No assignments yet</p>
+            <Button onClick={() => navigate('/assignments')} className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Add Assignment
+            </Button>
+          </div>
+        ) : (
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+                <XAxis dataKey="name" stroke="#888" style={{ fontSize: "12px" }} />
+                <YAxis stroke="#888" style={{ fontSize: "12px" }} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "#fff", border: "1px solid #ccc" }}
+                  labelStyle={{ color: "#333", fontWeight: 500 }}
+                />
+                <Bar dataKey="value" fill="#6366f1" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
     </div>
   )
