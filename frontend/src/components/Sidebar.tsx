@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
 import axios from "axios"
 import { Button } from "../components/ui/button"
-import { LayoutDashboard, BookOpen, Settings } from "lucide-react" // Optional icon
+import { LayoutDashboard, BookOpen, Settings, ClipboardList } from "lucide-react" // Added ClipboardList icon
 import { Avatar, AvatarFallback } from "../components/ui/avatar"
 import {
     Accordion,
@@ -58,6 +58,15 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                         >
                             <LayoutDashboard className="w-4 h-4 mr-4" />
                             Dashboard
+                        </Link>
+
+                        <Link
+                            to="/assignments"
+                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/assignments") ? "bg-gray-200" : "hover:bg-gray-100"
+                                }`}
+                        >
+                            <ClipboardList className="w-4 h-4 mr-4" />
+                            Assignments
                         </Link>
 
                         <Accordion 
