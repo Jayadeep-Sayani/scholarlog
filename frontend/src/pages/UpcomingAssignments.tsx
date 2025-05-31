@@ -82,7 +82,11 @@ export default function UpcomingAssignments() {
         }
       );
       
-      setAssignments(prev => [...prev, response.data]);
+      // Add new assignment and sort by deadline
+      setAssignments(prev => [...prev, response.data].sort((a, b) => 
+        new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+      ));
+      
       setFormData({
         name: '',
         courseId: '',
