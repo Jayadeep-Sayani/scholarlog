@@ -10,68 +10,65 @@ import Settings from "./pages/Settings"
 import Assignments from "./pages/UpcomingAssignments"
 import { PrivateRoute } from "./components/PrivateRoute"
 import { Toaster } from "./components/ui/toaster"
-import { HelmetProvider } from "react-helmet-async"
 
 export default function App() {
   return (
-    <HelmetProvider context={{}}>
-      <BrowserRouter>
-        <AuthProvider>
-          <CourseProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/" element={<Navigate to="/dashboard" />} />
+    <BrowserRouter>
+      <AuthProvider>
+        <CourseProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
 
-              <Route
-                path="/dashboard"
-                element={
-                  <PrivateRoute>
-                    <Dashboard />
-                  </PrivateRoute>
-                }
-              />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
 
-              <Route
-                path="/courses"
-                element={
-                  <PrivateRoute>
-                    <Courses />
-                  </PrivateRoute>
-                }
-              />
+            <Route
+              path="/courses"
+              element={
+                <PrivateRoute>
+                  <Courses />
+                </PrivateRoute>
+              }
+            />
 
-              <Route
-                path="/courses/:id"
-                element={
-                  <PrivateRoute>
-                    <CourseDetail />
-                  </PrivateRoute>
-                }
-              />
+            <Route
+              path="/courses/:id"
+              element={
+                <PrivateRoute>
+                  <CourseDetail />
+                </PrivateRoute>
+              }
+            />
 
-              <Route
-                path="/assignments"
-                element={
-                  <PrivateRoute>
-                    <Assignments />
-                  </PrivateRoute>
-                }
-              />
+            <Route
+              path="/assignments"
+              element={
+                <PrivateRoute>
+                  <Assignments />
+                </PrivateRoute>
+              }
+            />
 
-              <Route
-                path="/settings"
-                element={
-                  <PrivateRoute>
-                    <Settings />
-                  </PrivateRoute>
-                }
-              />
-            </Routes>
-            <Toaster />
-          </CourseProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </HelmetProvider>
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <Settings />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+          <Toaster />
+        </CourseProvider>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
