@@ -28,7 +28,7 @@ export default function GpaTrendChart({ data }: Props) {
     return (
         <div className="bg-white rounded-xl shadow p-4 w-full max-w-3xl mx-auto">
             <h2 className="text-lg font-semibold">
-                GPA Trend (4.0 Scale)
+                GPA Trend (9.0 Scale)
             </h2>
 
             <div className="relative">
@@ -42,7 +42,7 @@ export default function GpaTrendChart({ data }: Props) {
                             style={{ fontSize: "12px" }}
                         />
                         <YAxis
-                            domain={[0, 4.0]}
+                            domain={[0, 9.0]}
                             stroke="#888"
                             tick={{ fill: "var(--text-muted)" }}
                             style={{ fontSize: "12px" }}

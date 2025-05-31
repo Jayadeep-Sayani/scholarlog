@@ -28,15 +28,14 @@ export function calculateOverallGPA(courses: Course[]): number {
 }
 
 export function mapGradeToGpa(grade: number): number {
-  if (grade >= 93) return 4.0
-  if (grade >= 90) return 3.7
-  if (grade >= 87) return 3.3
-  if (grade >= 83) return 3.0
-  if (grade >= 80) return 2.7
-  if (grade >= 77) return 2.3
-  if (grade >= 73) return 2.0
-  if (grade >= 70) return 1.7
-  if (grade >= 67) return 1.3
-  if (grade >= 65) return 1.0
+  if (grade >= 90) return 9.0
+  if (grade >= 85) return 8.0
+  if (grade >= 80) return 7.0
+  if (grade >= 77) return 6.0
+  if (grade >= 73) return 5.0
+  if (grade >= 70) return 4.0
+  if (grade >= 65) return 3.0
+  if (grade >= 60) return 2.0
+  if (grade >= 50) return 1.0
   return 0.0
 }

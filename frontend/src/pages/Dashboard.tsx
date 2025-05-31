@@ -45,7 +45,7 @@ export default function Dashboard() {
           <div className="mb-6 px-4 py-3 bg-white rounded-xl shadow flex items-center justify-between max-w-md">
             <p className="text-sm text-muted-foreground">Your Overall GPA</p>
             <p className="text-xl font-bold text-black">
-              {userGpa.toFixed(2)} / 4.0
+              {userGpa.toFixed(2)} / 9.0
             </p>
           </div>
         )}
