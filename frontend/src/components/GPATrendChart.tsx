@@ -26,13 +26,13 @@ export default function GpaTrendChart({ data }: Props) {
     }, [data]);
 
     return (
-        <div className="bg-white rounded-xl shadow p-4 w-full max-w-3xl mx-auto">
+        <div className="bg-white rounded-xl shadow p-4 w-full">
             <h2 className="text-lg font-semibold">
                 GPA Trend (9.0 Scale)
             </h2>
 
             <div className="relative">
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
                         <XAxis

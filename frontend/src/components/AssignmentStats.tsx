@@ -60,20 +60,24 @@ export default function AssignmentStats() {
     <>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-xl shadow p-4">
-          <h3 className="text-sm text-muted-foreground">Upcoming</h3>
+          <h3 className="text-sm text-muted-foreground">Upcoming Assignments</h3>
           <p className="text-2xl font-bold">{stats.upcoming}</p>
+          <p className="text-xs text-muted-foreground mt-1">Due in the future</p>
         </div>
         <div className="bg-white rounded-xl shadow p-4">
           <h3 className="text-sm text-muted-foreground">In Progress</h3>
           <p className="text-2xl font-bold">{stats.inProgress}</p>
+          <p className="text-xs text-muted-foreground mt-1">Currently working on</p>
         </div>
         <div className="bg-white rounded-xl shadow p-4">
           <h3 className="text-sm text-muted-foreground">Not Started</h3>
           <p className="text-2xl font-bold">{stats.notStarted}</p>
+          <p className="text-xs text-muted-foreground mt-1">Haven't begun yet</p>
         </div>
         <div className="bg-white rounded-xl shadow p-4">
           <h3 className="text-sm text-muted-foreground">Overdue</h3>
           <p className="text-2xl font-bold">{stats.overdue}</p>
+          <p className="text-xs text-muted-foreground mt-1">Past due date</p>
         </div>
       </div>
 
