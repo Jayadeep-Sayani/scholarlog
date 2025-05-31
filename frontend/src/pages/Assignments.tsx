@@ -28,13 +28,13 @@ function getDueDateDisplay(deadline: string): { text: string; className: string 
   const diffTime = dueDate.getTime() - today.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffDays < 0) {
+  if (diffDays < -1) {
     return { text: 'Overdue', className: 'bg-red-100 text-red-800' };
-  } else if (diffDays === 0) {
+  } else if (diffDays === -1) {
     return { text: 'Due today', className: 'bg-orange-100 text-orange-800' };
-  } else if (diffDays === 1) {
+  } else if (diffDays === 0) {
     return { text: 'Due tomorrow', className: 'bg-yellow-100 text-yellow-800' };
-  } else if (diffDays <= 7) {
+  } else if (diffDays <= 6) {
     return { text: `Due in ${diffDays} days`, className: 'bg-blue-100 text-blue-800' };
   } else {
     return { text: `Due in ${diffDays} days`, className: 'bg-gray-100 text-gray-800' };
