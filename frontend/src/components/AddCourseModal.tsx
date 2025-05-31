@@ -7,6 +7,7 @@ import { Switch } from "./ui/switch"
 import axios from "axios"
 import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
+import { useToast } from "../hooks/use-toast"
 
 type Props = {
   onCreate: (name: string, isActive: boolean) => void
@@ -21,6 +22,7 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
   const [grade, setGrade] = useState("")
   const { token } = useAuth()
   const { fetchCourses } = useCourses()
+  const { toast } = useToast()
 
   // Update isActive when modal opens to use current defaultActive value
   useEffect(() => {
@@ -32,7 +34,10 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
   const handleSubmit = async () => {
     if (!name.trim()) return
     if (!isActive && !grade.trim()) {
-      alert("Final grade is required for completed courses.")
+      toast({
+        title: "Error",
+        description: "Final grade is required for completed courses.",
+      })
       return
     }
 
@@ -68,8 +73,17 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
       setGrade("")
       setIsActive(defaultActive)
       setOpen(false)
+
+      toast({
+        title: "Course created",
+        description: "The course has been successfully created.",
+      })
     } catch (err) {
       console.error("Failed to create course:", err)
+      toast({
+        title: "Error",
+        description: "Failed to create the course. Please try again.",
+      })
     }
   }
 
