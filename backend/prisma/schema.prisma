@@ -38,3 +38,14 @@ model Assignment {
 
   course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
+
+model UpcomingAssignment {
+  id         Int      @id @default(autoincrement())
+  name       String
+  status     String   // 'not_started' or 'in_progress'
+  deadline   DateTime
+  courseId   Int
+  createdAt  DateTime @default(now())
+
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}

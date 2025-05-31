@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCourses } from '../context/CourseContext';
+import { useAuth } from '../context/AuthContext';
 import SidebarLayout from '../components/Sidebar';
+import axios from 'axios';
 import {
   Dialog,
   DialogContent,
@@ -12,9 +14,9 @@ import { Button } from "../components/ui/button";
 import { Plus } from "lucide-react";
 
 interface Assignment {
-  id: string;
+  id: number;
   name: string;
-  courseId: string;
+  courseId: number;
   status: 'not_started' | 'in_progress';
   deadline: string;
 }
@@ -41,8 +43,9 @@ function getDueDateDisplay(deadline: string): { text: string; className: string 
   }
 }
 
-export default function Assignments() {
+export default function UpcomingAssignments() {
   const { activeCourses } = useCourses();
+  const { token } = useAuth();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [formData, setFormData] = useState({
     name: '',
@@ -52,20 +55,55 @@ export default function Assignments() {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!token) return;
+    
+    // Fetch assignments when component mounts
+    axios.get('https://scholarlog-api.onrender.com/api/upcoming-assignments', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => setAssignments(res.data))
+    .catch(err => console.error('Failed to fetch assignments:', err));
+  }, [token]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newAssignment: Assignment = {
-      id: Date.now().toString(),
-      ...formData,
-    };
-    setAssignments([...assignments, newAssignment]);
-    setFormData({
-      name: '',
-      courseId: '',
-      status: 'not_started',
-      deadline: '',
-    });
-    setIsModalOpen(false);
+    try {
+      const response = await axios.post(
+        'https://scholarlog-api.onrender.com/api/upcoming-assignments',
+        {
+          name: formData.name,
+          courseId: parseInt(formData.courseId),
+          status: formData.status,
+          deadline: formData.deadline,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      
+      setAssignments(prev => [...prev, response.data]);
+      setFormData({
+        name: '',
+        courseId: '',
+        status: 'not_started',
+        deadline: '',
+      });
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Failed to add assignment:', err);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`https://scholarlog-api.onrender.com/api/upcoming-assignments/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setAssignments(prev => prev.filter(a => a.id !== id));
+    } catch (err) {
+      console.error('Failed to delete assignment:', err);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -196,7 +234,7 @@ export default function Assignments() {
                       <div>
                         <h3 className="font-medium">{assignment.name}</h3>
                         <p className="text-sm text-gray-600">
-                          Course: {activeCourses.find(c => c.id.toString() === assignment.courseId)?.name}
+                          Course: {activeCourses.find(c => c.id === assignment.courseId)?.name}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-2">
@@ -208,6 +246,12 @@ export default function Assignments() {
                         <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${dueDateInfo.className}`}>
                           {dueDateInfo.text}
                         </span>
+                        <Button
+                          className="bg-red-500 hover:bg-red-600 text-white"
+                          onClick={() => handleDelete(assignment.id)}
+                        >
+                          Delete
+                        </Button>
                       </div>
                     </div>
                   </div>

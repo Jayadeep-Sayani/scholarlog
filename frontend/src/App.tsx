@@ -7,7 +7,7 @@ import Dashboard from "./pages/Dashboard"
 import Courses from "./pages/Courses"
 import CourseDetail from "./pages/CourseDetail"
 import Settings from "./pages/Settings"
-import Assignments from "./pages/Assignments"
+import Assignments from "./pages/UpcomingAssignments"
 import { PrivateRoute } from "./components/PrivateRoute"
 
 export default function App() {
