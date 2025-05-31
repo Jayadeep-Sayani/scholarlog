@@ -9,6 +9,7 @@ import CourseDetail from "./pages/CourseDetail"
 import Settings from "./pages/Settings"
 import Assignments from "./pages/UpcomingAssignments"
 import { PrivateRoute } from "./components/PrivateRoute"
+import { Toaster } from "./components/ui/toaster"
 
 export default function App() {
   return (
@@ -65,6 +66,7 @@ export default function App() {
               }
             />
           </Routes>
+          <Toaster />
         </CourseProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -9,6 +9,7 @@ import CourseCard from "../components/CourseCard"
 import Sidebar from "../components/Sidebar"
 import AddCourseModal from "../components/AddCourseModal"
 import { Plus } from "lucide-react"
+import { useToast } from "../hooks/use-toast"
 
 type Assignment = {
   id: number
@@ -34,6 +35,7 @@ export default function Courses() {
   const [userGpa, setUserGpa] = useState<number | null>(null)
   const [gpaScale, setGpaScale] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const { toast } = useToast()
 
   const navigate = useNavigate()
 
@@ -61,8 +63,16 @@ export default function Courses() {
       })
       // Update courses in context
       setCourses((prev) => prev.filter((c) => c.id !== id))
+      toast({
+        title: "Course deleted",
+        description: "The course has been successfully deleted.",
+      })
     } catch (err) {
       console.error("Failed to delete course:", err)
+      toast({
+        title: "Error",
+        description: "Failed to delete the course. Please try again.",
+      })
     }
   }
 
@@ -75,8 +85,16 @@ export default function Courses() {
       )
       // Fetch updated courses using the context method
       await fetchCourses()
+      toast({
+        title: "Course created",
+        description: "The course has been successfully created.",
+      })
     } catch (err) {
       console.error("Error creating course:", err)
+      toast({
+        title: "Error",
+        description: "Failed to create the course. Please try again.",
+      })
     }
   }
 
@@ -91,8 +109,16 @@ export default function Courses() {
       setCourses((prev) => 
         prev.map((c) => (c.id === id ? { ...c, name, isActive } : c))
       )
+      toast({
+        title: "Course updated",
+        description: "The course has been successfully updated.",
+      })
     } catch (err) {
       console.error("Failed to update course:", err)
+      toast({
+        title: "Error",
+        description: "Failed to update the course. Please try again.",
+      })
     }
   }
 

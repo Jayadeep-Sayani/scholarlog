@@ -12,6 +12,7 @@ import {
 } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
 import { Plus } from "lucide-react";
+import { useToast } from "../hooks/use-toast";
 
 interface Assignment {
   id: number;
@@ -54,6 +55,7 @@ export default function UpcomingAssignments() {
     deadline: '',
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!token) return;
@@ -63,7 +65,13 @@ export default function UpcomingAssignments() {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => setAssignments(res.data))
-    .catch(err => console.error('Failed to fetch assignments:', err));
+    .catch(err => {
+      console.error('Failed to fetch assignments:', err);
+      toast({
+        title: "Error",
+        description: "Failed to fetch assignments. Please try again.",
+      });
+    });
   }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,8 +102,17 @@ export default function UpcomingAssignments() {
         deadline: '',
       });
       setIsModalOpen(false);
+
+      toast({
+        title: "Assignment added",
+        description: "The upcoming assignment has been successfully added.",
+      });
     } catch (err) {
       console.error('Failed to add assignment:', err);
+      toast({
+        title: "Error",
+        description: "Failed to add the assignment. Please try again.",
+      });
     }
   };
 
@@ -105,8 +122,16 @@ export default function UpcomingAssignments() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAssignments(prev => prev.filter(a => a.id !== id));
+      toast({
+        title: "Assignment deleted",
+        description: "The upcoming assignment has been successfully deleted.",
+      });
     } catch (err) {
       console.error('Failed to delete assignment:', err);
+      toast({
+        title: "Error",
+        description: "Failed to delete the assignment. Please try again.",
+      });
     }
   };
 
@@ -126,7 +151,7 @@ export default function UpcomingAssignments() {
   return (
     <SidebarLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Upcoming</h1>
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
@@ -221,7 +246,7 @@ export default function UpcomingAssignments() {
         </div>
 
         {/* Assignments List */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div>
           <h2 className="text-xl font-semibold mb-4">Your Assignments</h2>
           {assignments.length === 0 ? (
             <p className="text-gray-500">No assignments added yet.</p>

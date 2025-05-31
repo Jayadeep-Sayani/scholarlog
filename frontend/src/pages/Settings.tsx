@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
 import { Button } from "../components/ui/button"
 import { Label } from "../components/ui/label"
+import { useToast } from "../hooks/use-toast"
 
 export default function Settings() {
   const { token, logout } = useAuth()
   const navigate = useNavigate()
   const [gpaScale, setGpaScale] = useState<number | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     if (!token) return
@@ -24,6 +26,10 @@ export default function Settings() {
       setGpaScale(res.data.scale)
     } catch (err) {
       console.error("Failed to fetch GPA scale", err)
+      toast({
+        title: "Error",
+        description: "Failed to fetch GPA scale. Please try again.",
+      })
     }
   }
 
@@ -55,8 +61,20 @@ export default function Settings() {
                           { scale: newScale },
                           { headers: { Authorization: `Bearer ${token}` } }
                         )
-                        .then(() => fetchUserGpa())
-                        .catch((err) => console.error("Failed to update scale", err))
+                        .then(() => {
+                          fetchUserGpa()
+                          toast({
+                            title: "GPA scale updated",
+                            description: `Your GPA scale has been updated to ${newScale}.`,
+                          })
+                        })
+                        .catch((err) => {
+                          console.error("Failed to update scale", err)
+                          toast({
+                            title: "Error",
+                            description: "Failed to update GPA scale. Please try again.",
+                          })
+                        })
                     }}
                     className="border rounded-md px-2 py-1 text-sm"
                   >
