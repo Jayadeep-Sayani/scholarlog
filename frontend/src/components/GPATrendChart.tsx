@@ -2,11 +2,10 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { useMemo } from "react"
 
 type Props = {
-    data: { course: string; gpa: number; createdAt: string }[],
-    gpaScale: number
+    data: { course: string; gpa: number; createdAt: string }[]
 }
 
-export default function GpaTrendChart({ data, gpaScale }: Props) {
+export default function GpaTrendChart({ data }: Props) {
     // Generate sample data when there are 0 or 1 courses
     const chartData = useMemo(() => {
         if (data.length > 1) {
@@ -16,20 +15,20 @@ export default function GpaTrendChart({ data, gpaScale }: Props) {
         // Always use sample data for demonstration when fewer than 2 courses exist
         // Add sample courses to show a trend
         const sampleCourses = [
-            { course: "Sample Course 1", gpa: gpaScale * 0.8, createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString() },
-            { course: "Sample Course 2", gpa: gpaScale * 0.7, createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString() },
-            { course: "Sample Course 3", gpa: gpaScale * 0.85, createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() },
-            { course: "Sample Course 4", gpa: gpaScale * 0.9, createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
+            { course: "Sample Course 1", gpa: 3.2, createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString() },
+            { course: "Sample Course 2", gpa: 2.8, createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString() },
+            { course: "Sample Course 3", gpa: 3.4, createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() },
+            { course: "Sample Course 4", gpa: 3.6, createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() },
         ];
         
         // Always return only sample courses when fewer than 2 real courses
         return sampleCourses;
-    }, [data, gpaScale]);
+    }, [data]);
 
     return (
         <div className="bg-white rounded-xl shadow p-4 w-full max-w-3xl mx-auto">
             <h2 className="text-lg font-semibold">
-                GPA Trend (Scale {gpaScale})
+                GPA Trend (4.0 Scale)
             </h2>
 
             <div className="relative">
@@ -43,7 +42,7 @@ export default function GpaTrendChart({ data, gpaScale }: Props) {
                             style={{ fontSize: "12px" }}
                         />
                         <YAxis
-                            domain={[0, gpaScale]}
+                            domain={[0, 4.0]}
                             stroke="#888"
                             tick={{ fill: "var(--text-muted)" }}
                             style={{ fontSize: "12px" }}
@@ -62,7 +61,7 @@ export default function GpaTrendChart({ data, gpaScale }: Props) {
                     </LineChart>
                 </ResponsiveContainer>
                 
-                {data.length <= 1 && (
+                {data.length < 2 && (
                     <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-white rounded-md">
                         <div className="text-center p-4 max-w-xs">
                             <p className="text-sm font-medium">Add at least 2 completed courses to view your actual GPA trendline</p>

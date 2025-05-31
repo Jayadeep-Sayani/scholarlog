@@ -7,7 +7,6 @@ type Course = {
   grade: number
 }
 
-
 export function calculateWeightedGPA(assignments: Assignment[]): number {
   let totalWeight = 0
   let totalScore = 0
@@ -21,9 +20,6 @@ export function calculateWeightedGPA(assignments: Assignment[]): number {
   return parseFloat((totalScore / totalWeight).toFixed(2))
 }
 
-
-
-
 export function calculateOverallGPA(courses: Course[]): number {
   if (courses.length === 0) return 0
 
@@ -31,12 +27,7 @@ export function calculateOverallGPA(courses: Course[]): number {
   return parseFloat((total / courses.length).toFixed(2))
 }
 
-export function mapGradeToGpa(grade: number, scale: number): number {
-  if (scale === 10.0) {
-    return parseFloat((grade / 10).toFixed(2))
-  }
-
-  // Default to 4.0 scale
+export function mapGradeToGpa(grade: number): number {
   if (grade >= 93) return 4.0
   if (grade >= 90) return 3.7
   if (grade >= 87) return 3.3

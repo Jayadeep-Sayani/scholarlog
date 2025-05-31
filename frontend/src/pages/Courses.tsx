@@ -33,7 +33,6 @@ export default function Courses() {
   const { token } = useAuth()
   const { courses, setCourses, fetchCourses, activeCourses, completedCourses } = useCourses()
   const [userGpa, setUserGpa] = useState<number | null>(null)
-  const [gpaScale, setGpaScale] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
 
@@ -45,7 +44,6 @@ export default function Courses() {
         headers: { Authorization: `Bearer ${token}` },
       })
       setUserGpa(res.data.gpa)
-      setGpaScale(res.data.scale)
     } catch (err) {
       console.error("Failed to fetch GPA", err)
     }

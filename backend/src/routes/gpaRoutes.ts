@@ -3,14 +3,9 @@ import prisma from "../utils/prisma"
 import { verifyToken, AuthRequest } from "../middleware/authMiddleware"
 import { calculateWeightedGPA, calculateOverallGPA, mapGradeToGpa } from "../utils/gpaUtils"
 
-
 const router = express.Router()
 
 router.get("/gpa", verifyToken, async (req: AuthRequest, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.userId },
-  })
-
   const courses = await prisma.course.findMany({
     where: {
       userId: req.userId,
@@ -21,33 +16,17 @@ router.get("/gpa", verifyToken, async (req: AuthRequest, res) => {
 
   const courseGpas = courses.map((course) => {
     const grade = calculateWeightedGPA(course.assignments)
-    return mapGradeToGpa(grade, user?.gpaScale ?? 4.0)
+    return mapGradeToGpa(grade)
   })
 
   const gpa = courseGpas.length
     ? parseFloat((courseGpas.reduce((a, b) => a + b, 0) / courseGpas.length).toFixed(2))
     : 0
 
-  res.json({ gpa, scale: user?.gpaScale ?? 4.0 })
-})
-
-router.put("/settings/scale", verifyToken, async (req: AuthRequest, res) => {
-  const { scale } = req.body
-
-
-  await prisma.user.update({
-    where: { id: req.userId },
-    data: { gpaScale: scale },
-  })
-
-  res.json({ message: "GPA scale updated", scale })
+  res.json({ gpa })
 })
 
 router.get("/gpa-history", verifyToken, async (req: AuthRequest, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.userId },
-  })
-
   const courses = await prisma.course.findMany({
     where: {
       userId: req.userId,
@@ -61,15 +40,13 @@ router.get("/gpa-history", verifyToken, async (req: AuthRequest, res) => {
     },
   })
 
-  const scale = user?.gpaScale ?? 4.0
-
   const history = []
   let totalGpa = 0
   let count = 0
 
   for (const course of courses) {
     const weighted = calculateWeightedGPA(course.assignments)
-    const gpa = mapGradeToGpa(weighted, scale)
+    const gpa = mapGradeToGpa(weighted)
 
     count += 1
     totalGpa += gpa
@@ -84,8 +61,5 @@ router.get("/gpa-history", verifyToken, async (req: AuthRequest, res) => {
 
   res.json(history)
 })
-
-
-
 
 export default router

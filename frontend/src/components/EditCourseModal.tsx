@@ -149,6 +149,8 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
                 placeholder="Enter final grade"
                 value={finalGrade}
                 onChange={(e) => setFinalGrade(e.target.value)}
+                min="0"
+                max="100"
               />
             </div>
           )}

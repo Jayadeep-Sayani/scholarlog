@@ -125,6 +125,8 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
                 placeholder="Enter final grade"
                 value={grade}
                 onChange={(e) => setGrade(e.target.value)}
+                min="0"
+                max="100"
               />
             </div>
           )}

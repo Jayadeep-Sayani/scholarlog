@@ -10,7 +10,6 @@ export default function Dashboard() {
   const { logout } = useAuth()
   const [gpaHistory, setGpaHistory] = useState([])
   const { token } = useAuth()
-  const [gpaScale, setGpaScale] = useState<number>(4.0)
   const [userGpa, setUserGpa] = useState<number | null>(null)
 
   const fetchUserGpa = async () => {
@@ -19,7 +18,6 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
       })
       setUserGpa(res.data.gpa)
-      setGpaScale(res.data.scale)
     } catch (err) {
       console.error("Failed to fetch GPA", err)
     }
@@ -47,7 +45,7 @@ export default function Dashboard() {
           <div className="mb-6 px-4 py-3 bg-white rounded-xl shadow flex items-center justify-between max-w-md">
             <p className="text-sm text-muted-foreground">Your Overall GPA</p>
             <p className="text-xl font-bold text-black">
-              {userGpa.toFixed(2)} / {gpaScale}
+              {userGpa.toFixed(2)} / 4.0
             </p>
           </div>
         )}
@@ -57,7 +55,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-xl shadow p-4">
             <h3 className="text-lg font-semibold mb-4">GPA Trend</h3>
-            <GpaTrendChart data={gpaHistory} gpaScale={gpaScale} />
+            <GpaTrendChart data={gpaHistory} />
           </div>
         </div>
       </div>

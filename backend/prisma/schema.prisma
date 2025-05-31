@@ -14,7 +14,6 @@ model User {
   createdAt DateTime @default(now())
 
   courses   Course[]
-  gpaScale  Float   @default(4.0) // 4.0 or 10.0
 }
 
 model Course {
