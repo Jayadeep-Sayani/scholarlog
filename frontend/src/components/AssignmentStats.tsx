@@ -84,7 +84,7 @@ export default function AssignmentStats() {
       <div className="bg-white rounded-xl shadow p-4 relative">
         <h3 className="text-lg font-semibold mb-4">Assignment Status</h3>
         {totalAssignments === 0 ? (
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center py-5 justify-center rounded-xl">
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl h-[300px]">
             <p className="text-muted-foreground mb-4">No assignments yet</p>
             <Button onClick={() => navigate('/assignments')} className="flex items-center gap-2">
               <Plus className="w-4 h-4" />
