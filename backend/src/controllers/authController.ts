@@ -179,3 +179,63 @@ export const getUserIdByEmail = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const resendVerificationCode = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body;
+
+  try {
+    const user = await prisma.$queryRaw<{ id: number; isVerified: boolean; verificationCode: string | null }[]>`
+      SELECT id, "isVerified", "verificationCode" FROM "User" WHERE email = ${email}
+    `;
+
+    if (!user || user.length === 0) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    if (user[0].isVerified) {
+      res.status(400).json({ error: 'User is already verified' });
+      return;
+    }
+
+    // Generate new verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Update user with new code
+    await prisma.$executeRaw`
+      UPDATE "User" 
+      SET "verificationCode" = ${verificationCode}
+      WHERE id = ${user[0].id}
+    `;
+
+    // Try to send verification email
+    try {
+      if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: 'Verify your ScholarLog account',
+          html: `
+            <h1>Welcome to ScholarLog!</h1>
+            <p>Your verification code is: <strong>${verificationCode}</strong></p>
+            <p>Please enter this code to verify your account.</p>
+          `,
+        });
+      } else {
+        console.warn('Email credentials not configured. Skipping verification email.');
+      }
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Continue even if email fails
+    }
+
+    res.status(200).json({ 
+      message: 'New verification code sent',
+      userId: user[0].id,
+      verificationCode // Send code in response for development
+    });
+  } catch (error) {
+    console.error('Resend Verification Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
