@@ -27,10 +27,6 @@ export default function GpaTrendChart({ data }: Props) {
 
     return (
         <div className="bg-white rounded-xl shadow p-4 w-full">
-            <h2 className="text-lg font-semibold">
-                GPA Trend (9.0 Scale)
-            </h2>
-
             <div className="relative">
                 <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={chartData}>
