@@ -145,9 +145,16 @@ export default function UpcomingAssignments() {
 
   const handleSetInProgress = async (assignmentId: number) => {
     try {
+      const assignment = assignments.find(a => a.id === assignmentId);
+      if (!assignment) return;
+
       await axios.put(
         `https://scholarlog-api.onrender.com/api/upcoming-assignments/${assignmentId}`,
-        { status: 'in_progress' },
+        {
+          name: assignment.name,
+          status: 'in_progress',
+          deadline: assignment.deadline
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -177,6 +184,17 @@ export default function UpcomingAssignments() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayString = today.toISOString().split('T')[0];
+
+  const getStatusDisplay = (status: string) => {
+    switch (status) {
+      case 'not_started':
+        return { text: 'Not Started', className: 'bg-gray-100 text-gray-800' };
+      case 'in_progress':
+        return { text: 'In Progress', className: 'bg-blue-100 text-blue-800' };
+      default:
+        return { text: status, className: 'bg-gray-100 text-gray-800' };
+    }
+  };
 
   return (
     <SidebarLayout>
@@ -287,6 +305,7 @@ export default function UpcomingAssignments() {
             <div className="grid gap-4">
               {assignments.map(assignment => {
                 const dueDateInfo = getDueDateDisplay(assignment.deadline);
+                const statusInfo = getStatusDisplay(assignment.status);
                 return (
                   <div
                     key={assignment.id}
@@ -294,9 +313,19 @@ export default function UpcomingAssignments() {
                   >
                     <div>
                       <h3 className="font-semibold">{assignment.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {activeCourses.find(c => c.id === assignment.courseId)?.name} • Due {dueDateInfo.text}
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-sm text-muted-foreground">
+                          {activeCourses.find(c => c.id === assignment.courseId)?.name}
+                        </span>
+                        <span className="text-sm text-muted-foreground">•</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.className}`}>
+                          {statusInfo.text}
+                        </span>
+                        <span className="text-sm text-muted-foreground">•</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${dueDateInfo.className}`}>
+                          {dueDateInfo.text}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {assignment.status === 'not_started' && (
