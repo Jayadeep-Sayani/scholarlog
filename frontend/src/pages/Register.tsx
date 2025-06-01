@@ -26,7 +26,12 @@ export default function Register() {
     setError("")
     setSuccess("")
 
-    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address")
+      return
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match")

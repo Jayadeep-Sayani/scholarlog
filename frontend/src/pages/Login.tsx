@@ -19,6 +19,15 @@ export default function Login() {
   }, [token])
 
   const handleLogin = async () => {
+    setError("")
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address")
+      return
+    }
+
     try {
       const res = await axios.post("https://scholarlog-api.onrender.com/api/auth/login", {
         email,

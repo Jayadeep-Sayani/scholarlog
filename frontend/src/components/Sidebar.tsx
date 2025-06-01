@@ -80,11 +80,12 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
                         <Link
                             to="/assignments"
-                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/assignments") ? "bg-gray-200" : "hover:bg-gray-100"
-                                }`}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 ${
+                                pathname === "/assignments" ? "bg-gray-100" : ""
+                            }`}
                         >
                             <ClipboardList className="w-4 h-4 mr-4" />
-                            Upcoming
+                            Tasks
                         </Link>
                     </nav>
                 </div>
