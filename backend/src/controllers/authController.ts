@@ -154,3 +154,28 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const getUserIdByEmail = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body;
+
+  try {
+    const user = await prisma.$queryRaw<{ id: number; isVerified: boolean }[]>`
+      SELECT id, "isVerified" FROM "User" WHERE email = ${email}
+    `;
+
+    if (!user || user.length === 0) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    if (user[0].isVerified) {
+      res.status(400).json({ error: 'User is already verified' });
+      return;
+    }
+
+    res.status(200).json({ userId: user[0].id });
+  } catch (error) {
+    console.error('Get User ID Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
