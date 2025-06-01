@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { MoreVertical, Edit, Trash, BookOpen } from "lucide-react"
+import { MoreVertical, Edit, Trash } from "lucide-react"
 import { Button } from "../components/ui/button"
 import ConfirmDeleteModal from "./ConfirmDeleteModal"
 import EditCourseModal from "./EditCourseModal"
@@ -14,12 +14,6 @@ type Props = {
         isActive: boolean
         credits: number
         grade?: number // optional GPA from backend
-        assignments?: Array<{
-            id: number
-            name: string
-            grade: number
-            weight: number
-        }>
     }
     onDelete: (id: number) => void
     onUpdate?: (id: number, name: string, isActive: boolean, credits: number) => void
@@ -113,14 +107,6 @@ export default function CourseCard({ course, onDelete, onUpdate }: Props) {
                 <p className="text-sm">
                     Credits: <span className="font-bold">{course.credits}</span>
                 </p>
-                {course.isActive && (
-                    <div className="flex items-center gap-2 mt-2">
-                        <BookOpen className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                            {course.assignments?.length || 0} Assignment{course.assignments?.length !== 1 ? 's' : ''}
-                        </span>
-                    </div>
-                )}
             </div>
         </div>
     )
