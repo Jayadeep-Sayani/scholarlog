@@ -172,12 +172,70 @@ export default function Courses() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filtered.map((course) => (
-                    <CourseCard
+                    <div
                       key={course.id}
-                      course={course}
-                      onDelete={handleDelete}
-                      onUpdate={handleUpdate}
-                    />
+                      className={`bg-white rounded-xl shadow-sm overflow-hidden border ${
+                        tab === "completed" ? "border-green-100" : "border-gray-100"
+                      } hover:shadow-md transition-shadow`}
+                    >
+                      <div className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-900">{course.name}</h3>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {course.credits} Credit{course.credits !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              className="p-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setEditTarget(course)
+                                setIsEditDialogOpen(true)
+                              }}
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <EditCourseModal
+                              course={course}
+                              onUpdate={handleUpdate}
+                              open={isEditDialogOpen && editTarget?.id === course.id}
+                              onOpenChange={setIsEditDialogOpen}
+                            />
+                            <Button
+                              className="p-2 hover:bg-gray-100"
+                              onClick={() => handleDelete(course.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-4 border-t">
+                          {tab === "completed" ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-green-600">
+                                Final Grade: {course.grade?.toFixed(1) || 'N/A'}%
+                              </span>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <BookOpen className="w-4 h-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
+                                  {course.assignments?.length || 0} Assignment{course.assignments?.length !== 1 ? 's' : ''}
+                                </span>
+                              </div>
+                              <Link
+                                to={`/courses/${course.id}`}
+                                className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                              >
+                                View Details →
+                              </Link>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
