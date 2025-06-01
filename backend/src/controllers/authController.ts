@@ -23,11 +23,20 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
   const { email, password } = req.body;
 
   try {
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await prisma.$queryRaw<{ id: number; isVerified: boolean }[]>`
+      SELECT id, "isVerified" FROM "User" WHERE email = ${email}
+    `;
 
-    if (existingUser) {
+    if (existingUser && existingUser.length > 0) {
+      if (!existingUser[0].isVerified) {
+        // If user exists but is not verified, just return the user ID
+        res.status(200).json({ 
+          message: 'Account exists but needs verification', 
+          userId: existingUser[0].id,
+          needsVerification: true
+        });
+        return;
+      }
       res.status(400).json({ error: 'User already exists' });
       return;
     }
@@ -47,7 +56,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
       } as Prisma.UserCreateInput,
     });
 
-    // Try to send verification email, but don't fail if email sending fails
+    // Try to send verification email
     try {
       if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
         await transporter.sendMail({
@@ -65,13 +74,12 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
       }
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError);
-      // Continue with registration even if email fails
     }
 
     res.status(201).json({ 
       message: 'Account created successfully', 
       userId: user.id,
-      verificationCode: verificationCode // Send code in response for development
+      verificationCode // For development
     });
   } catch (error) {
     console.error('Register Error:', error);
@@ -125,26 +133,27 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({ 
-      where: { email },
-    }) as UserWithVerification;
-    if (!user) {
+    const user = await prisma.$queryRaw<{ id: number; password: string; isVerified: boolean }[]>`
+      SELECT id, password, "isVerified" FROM "User" WHERE email = ${email}
+    `;
+
+    if (!user || user.length === 0) {
       res.status(401).json({ error: 'Invalid credentials' });
       return;
     }
 
-    if (!user.isVerified) {
-      res.status(401).json({ error: 'Please verify your email first' });
-      return;
-    }
-
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(password, user[0].password);
     if (!validPassword) {
       res.status(401).json({ error: 'Invalid credentials' });
       return;
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, {
+    if (!user[0].isVerified) {
+      res.status(401).json({ error: 'Please verify your email first' });
+      return;
+    }
+
+    const token = jwt.sign({ userId: user[0].id }, process.env.JWT_SECRET as string, {
       expiresIn: '1d',
     });
 
