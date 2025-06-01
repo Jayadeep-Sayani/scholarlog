@@ -10,14 +10,15 @@ import Assignments from "./pages/UpcomingAssignments"
 import { PrivateRoute } from "./components/PrivateRoute"
 import { Toaster } from "./components/ui/toaster"
 import Landing from "./pages/Landing"
+import MobileDetector from "./components/MobileDetector"
 import { Analytics } from "@vercel/analytics/react"
 
 export default function App() {
   return (
-    <>
-      <BrowserRouter>
-        <AuthProvider>
-          <CourseProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <CourseProvider>
+          <MobileDetector>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -60,10 +61,10 @@ export default function App() {
               />
             </Routes>
             <Toaster />
-          </CourseProvider>
-        </AuthProvider>
-      </BrowserRouter>
+          </MobileDetector>
+        </CourseProvider>
+      </AuthProvider>
       <Analytics />
-    </>
+    </BrowserRouter>
   )
 }
