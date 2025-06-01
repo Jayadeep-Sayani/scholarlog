@@ -10,56 +10,60 @@ import Assignments from "./pages/UpcomingAssignments"
 import { PrivateRoute } from "./components/PrivateRoute"
 import { Toaster } from "./components/ui/toaster"
 import Landing from "./pages/Landing"
+import { Analytics } from "@vercel/analytics/react"
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <CourseProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Landing />} />
+    <>
+      <BrowserRouter>
+        <AuthProvider>
+          <CourseProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/" element={<Landing />} />
 
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/courses"
-              element={
-                <PrivateRoute>
-                  <Courses />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/courses"
+                element={
+                  <PrivateRoute>
+                    <Courses />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/courses/:id"
-              element={
-                <PrivateRoute>
-                  <CourseDetail />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/courses/:id"
+                element={
+                  <PrivateRoute>
+                    <CourseDetail />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/assignments"
-              element={
-                <PrivateRoute>
-                  <Assignments />
-                </PrivateRoute>
-              }
-            />
-          </Routes>
-          <Toaster />
-        </CourseProvider>
-      </AuthProvider>
-    </BrowserRouter>
+              <Route
+                path="/assignments"
+                element={
+                  <PrivateRoute>
+                    <Assignments />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+            <Toaster />
+          </CourseProvider>
+        </AuthProvider>
+      </BrowserRouter>
+      <Analytics />
+    </>
   )
 }
