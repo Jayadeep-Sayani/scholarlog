@@ -11,18 +11,20 @@ router.get("/gpa", verifyToken, async (req: AuthRequest, res) => {
       userId: req.userId,
       isActive: false,
     },
-    include: { assignments: true },
+    include: { 
+      assignments: true 
+    }
   })
 
-  const courseGpas = courses.map((course) => {
+  const coursesWithGPA = courses.map((course: any) => {
     const grade = calculateWeightedGPA(course.assignments)
-    return mapGradeToGpa(grade)
+    return {
+      grade,
+      credits: course.credits
+    }
   })
 
-  const gpa = courseGpas.length
-    ? parseFloat((courseGpas.reduce((a, b) => a + b, 0) / courseGpas.length).toFixed(2))
-    : 0
-
+  const gpa = calculateOverallGPA(coursesWithGPA)
   res.json({ gpa })
 })
 
@@ -33,7 +35,7 @@ router.get("/gpa-history", verifyToken, async (req: AuthRequest, res) => {
       isActive: false,
     },
     include: {
-      assignments: true,
+      assignments: true
     },
     orderBy: {
       createdAt: "asc",
@@ -41,16 +43,17 @@ router.get("/gpa-history", verifyToken, async (req: AuthRequest, res) => {
   })
 
   const history = []
-  let totalGpa = 0
-  let count = 0
+  let totalPoints = 0
+  let totalCredits = 0
 
   for (const course of courses) {
     const weighted = calculateWeightedGPA(course.assignments)
-    const gpa = mapGradeToGpa(weighted)
-
-    count += 1
-    totalGpa += gpa
-    const cumulativeGpa = parseFloat((totalGpa / count).toFixed(2))
+    const courseGPA = mapGradeToGpa(weighted)
+    
+    totalPoints += courseGPA * (course as any).credits
+    totalCredits += (course as any).credits
+    
+    const cumulativeGpa = totalCredits > 0 ? parseFloat((totalPoints / totalCredits).toFixed(2)) : 0
 
     history.push({
       course: course.name,

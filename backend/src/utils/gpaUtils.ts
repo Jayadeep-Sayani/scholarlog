@@ -5,6 +5,7 @@ type Assignment = {
 
 type Course = {
   grade: number
+  credits: number
 }
 
 export function calculateWeightedGPA(assignments: Assignment[]): number {
@@ -23,8 +24,17 @@ export function calculateWeightedGPA(assignments: Assignment[]): number {
 export function calculateOverallGPA(courses: Course[]): number {
   if (courses.length === 0) return 0
 
-  const total = courses.reduce((acc, c) => acc + c.grade, 0)
-  return parseFloat((total / courses.length).toFixed(2))
+  let totalPoints = 0
+  let totalCredits = 0
+
+  for (const course of courses) {
+    const courseGPA = mapGradeToGpa(course.grade)
+    totalPoints += courseGPA * course.credits
+    totalCredits += course.credits
+  }
+
+  if (totalCredits === 0) return 0
+  return parseFloat((totalPoints / totalCredits).toFixed(2))
 }
 
 export function mapGradeToGpa(grade: number): number {

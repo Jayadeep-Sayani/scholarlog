@@ -47,7 +47,7 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
     }
 
     // First update the course status
-    onUpdate(course.id, name, isActive, parseInt(credits))
+    onUpdate(course.id, name, isActive, parseFloat(credits))
 
     // If marking as completed, add the final grade assignment
     if (!isActive && finalGrade.trim()) {

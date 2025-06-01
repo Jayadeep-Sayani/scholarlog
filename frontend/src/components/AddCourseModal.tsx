@@ -46,7 +46,7 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
     try {
       const response = await axios.post(
         "https://scholarlog-api.onrender.com/api/courses",
-        { name, isActive, credits: parseInt(credits) },
+        { name, isActive, credits: parseFloat(credits) },
         { headers: { Authorization: `Bearer ${token}` } }
       )
 
