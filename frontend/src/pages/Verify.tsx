@@ -2,19 +2,39 @@ import { Input } from "../components/ui/input"
 import { Button } from "../components/ui/button"
 import { Card, CardContent } from "../components/ui/card"
 import { Label } from "../components/ui/label"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 
 export default function Verify() {
   const [verificationCode, setVerificationCode] = useState("")
   const [error, setError] = useState("")
+  const [userId, setUserId] = useState<number | null>(null)
   const navigate = useNavigate()
 
+  useEffect(() => {
+    const getUserId = async () => {
+      try {
+        const res = await axios.get("https://scholarlog-api.onrender.com/api/auth/me")
+        setUserId(res.data.user.id)
+      } catch (err) {
+        console.error("Error getting user ID:", err)
+        setError("Failed to get user information")
+      }
+    }
+    getUserId()
+  }, [])
+
   const handleVerification = async () => {
+    if (!userId) {
+      setError("User information not available")
+      return
+    }
+
     setError("")
     try {
       const res = await axios.post("https://scholarlog-api.onrender.com/api/auth/verify", {
+        userId,
         code: verificationCode,
       })
       localStorage.setItem("token", res.data.token)

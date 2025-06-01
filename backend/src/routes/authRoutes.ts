@@ -12,16 +12,16 @@ router.post('/get-user-id', getUserIdByEmail);
 
 router.get('/me', verifyToken, async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: (req as any).userId },
-      select: { id: true, email: true }
-    });
+    const user = await prisma.$queryRaw<{ id: number; email: string; isVerified: boolean }[]>`
+      SELECT id, email, "isVerified" FROM "User" WHERE id = ${(req as any).userId}
+    `;
 
-    if (!user) {
+    if (!user || user.length === 0) {
       res.status(404).json({ error: 'User not found' });
+      return;
     }
 
-    res.status(200).json({ message: 'Token is valid!', user });
+    res.status(200).json({ message: 'Token is valid!', user: user[0] });
   } catch (error) {
     console.error('Error fetching user in /me:', error);
     res.status(500).json({ error: 'Internal server error' });
