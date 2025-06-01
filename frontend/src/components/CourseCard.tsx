@@ -26,8 +26,10 @@ export default function CourseCard({ course, onDelete, onUpdate }: Props) {
 
 
     const handleCourseClick = (e: React.MouseEvent) => {
-        // Always navigate to the course details page when clicking on the card
-        navigate(`/courses/${course.id}`);
+        // Only navigate to course details if the course is active
+        if (course.isActive) {
+            navigate(`/courses/${course.id}`);
+        }
     };
 
     return (

@@ -69,40 +69,14 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                             Upcoming
                         </Link>
 
-                        <Accordion 
-                            type="single" 
-                            collapsible 
-                            value={isCoursesOpen ? "courses" : undefined}
-                            onValueChange={(value) => setIsCoursesOpen(value === "courses")}
+                        <Link
+                            to="/courses"
+                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/courses") ? "bg-gray-200" : "hover:bg-gray-100"
+                                }`}
                         >
-                            <AccordionItem value="courses">
-                                <AccordionTrigger className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100">
-                                    <BookOpen className="w-4 h-4 mr-4" />
-                                    Courses
-                                </AccordionTrigger>
-                                <AccordionContent className="pl-3">
-                                    <Link
-                                        to="/courses"
-                                        className={`block px-3 py-2 ${isActive("/courses") ? "bg-gray-100" : "hover:bg-gray-100"
-                                            }`}
-                                    >
-                                        All Courses
-                                    </Link>
-                                    {activeCourses.map((c) => (
-                                        <Link
-                                            key={c.id}
-                                            to={`/courses/${c.id}`}
-                                            className={`block px-3 py-2 text-muted-foreground hover:bg-gray-100 ${pathname.includes(`/courses/${c.id}`)
-                                                ? "bg-gray-100 text-foreground"
-                                                : "hover:bg-gray-10"
-                                                }`}
-                                        >
-                                            {c.name}
-                                        </Link>
-                                    ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
+                            <BookOpen className="w-4 h-4 mr-4" />
+                            Courses
+                        </Link>
 
                         <Link
                             to="/settings"

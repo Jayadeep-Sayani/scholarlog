@@ -114,10 +114,11 @@ export default function AddCourseModal({ onCreate, trigger, defaultActive = true
             <Input
               id="credits"
               type="number"
+              step="0.5"
               placeholder="Enter number of credits"
               value={credits}
               onChange={(e) => setCredits(e.target.value)}
-              min="1"
+              min="0"
               max="6"
             />
           </div>
