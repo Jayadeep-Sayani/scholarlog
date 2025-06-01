@@ -47,21 +47,31 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
       } as Prisma.UserCreateInput,
     });
 
-    // Send verification email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Verify your ScholarLog account',
-      html: `
-        <h1>Welcome to ScholarLog!</h1>
-        <p>Your verification code is: <strong>${verificationCode}</strong></p>
-        <p>Please enter this code to verify your account.</p>
-      `,
-    });
+    // Try to send verification email, but don't fail if email sending fails
+    try {
+      if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: 'Verify your ScholarLog account',
+          html: `
+            <h1>Welcome to ScholarLog!</h1>
+            <p>Your verification code is: <strong>${verificationCode}</strong></p>
+            <p>Please enter this code to verify your account.</p>
+          `,
+        });
+      } else {
+        console.warn('Email credentials not configured. Skipping verification email.');
+      }
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Continue with registration even if email fails
+    }
 
     res.status(201).json({ 
-      message: 'Verification code sent', 
-      userId: user.id 
+      message: 'Account created successfully', 
+      userId: user.id,
+      verificationCode: verificationCode // Send code in response for development
     });
   } catch (error) {
     console.error('Register Error:', error);
