@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext"
 import { CourseProvider } from "./context/CourseContext"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import Verify from "./pages/Verify"
 import Dashboard from "./pages/Dashboard"
 import Courses from "./pages/Courses"
 import CourseDetail from "./pages/CourseDetail"
@@ -18,6 +19,7 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify" element={<Verify />} />
             <Route path="/" element={<Navigate to="/dashboard" />} />
 
             <Route

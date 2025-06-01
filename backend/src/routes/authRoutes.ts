@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser, verifyEmail, getUserIdByEmail, resendVerificationCode } from '../controllers/authController';
+import { registerUser, loginUser, verifyEmail, getUserIdByEmail } from '../controllers/authController';
 import { verifyToken } from '../middleware/authMiddleware';
 import prisma from '../utils/prisma';
 
@@ -9,7 +9,6 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/verify', verifyEmail);
 router.post('/get-user-id', getUserIdByEmail);
-router.post('/resend-verification', resendVerificationCode);
 
 router.get('/me', verifyToken, async (req, res) => {
   try {
