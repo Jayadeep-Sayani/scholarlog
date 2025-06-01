@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Play } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 
 interface Assignment {
@@ -143,6 +143,36 @@ export default function UpcomingAssignments() {
     }));
   };
 
+  const handleSetInProgress = async (assignmentId: number) => {
+    try {
+      await axios.put(
+        `https://scholarlog-api.onrender.com/api/upcoming-assignments/${assignmentId}`,
+        { status: 'in_progress' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Update local state
+      setAssignments(prev =>
+        prev.map(assignment =>
+          assignment.id === assignmentId
+            ? { ...assignment, status: 'in_progress' }
+            : assignment
+        )
+      );
+
+      toast({
+        title: "Status Updated",
+        description: "Assignment has been set to in progress.",
+      });
+    } catch (err) {
+      console.error("Failed to update assignment status:", err);
+      toast({
+        title: "Error",
+        description: "Failed to update assignment status. Please try again.",
+      });
+    }
+  };
+
   // Get today's date in YYYY-MM-DD format
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -249,39 +279,41 @@ export default function UpcomingAssignments() {
         <div>
           <h2 className="text-xl font-semibold mb-4">Your Assignments</h2>
           {assignments.length === 0 ? (
-            <p className="text-gray-500">No assignments added yet.</p>
+            <div className="text-center text-muted-foreground py-10">
+              <p className="text-lg">No upcoming assignments found.</p>
+              <p className="text-sm">Click the button above to add your first assignment.</p>
+            </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid gap-4">
               {assignments.map(assignment => {
                 const dueDateInfo = getDueDateDisplay(assignment.deadline);
                 return (
                   <div
                     key={assignment.id}
-                    className="border border-gray-200 rounded-md p-4 hover:bg-gray-50"
+                    className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between"
                   >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">{assignment.name}</h3>
-                        <p className="text-sm text-gray-600">
-                          Course: {activeCourses.find(c => c.id === assignment.courseId)?.name}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                          assignment.status === 'not_started' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {assignment.status === 'not_started' ? 'Not Started' : 'In Progress'}
-                        </span>
-                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${dueDateInfo.className}`}>
-                          {dueDateInfo.text}
-                        </span>
+                    <div>
+                      <h3 className="font-semibold">{assignment.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {activeCourses.find(c => c.id === assignment.courseId)?.name} • Due {dueDateInfo.text}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {assignment.status === 'not_started' && (
                         <Button
-                          className="bg-red-500 hover:bg-red-600 text-white"
-                          onClick={() => handleDelete(assignment.id)}
+                          className="flex items-center gap-2 border border-gray-300 hover:bg-gray-100"
+                          onClick={() => handleSetInProgress(assignment.id)}
                         >
-                          Delete
+                          <Play className="w-4 h-4" />
+                          Set to In Progress
                         </Button>
-                      </div>
+                      )}
+                      <Button
+                        className="text-gray-600 hover:bg-gray-100"
+                        onClick={() => handleDelete(assignment.id)}
+                      >
+                        Delete
+                      </Button>
                     </div>
                   </div>
                 );

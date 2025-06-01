@@ -1,5 +1,5 @@
 // src/layouts/SidebarLayout.tsx
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
@@ -13,16 +13,25 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../components/ui/accordion"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "./ui/dialog"
 
 export default function SidebarLayout({ children }: { children: React.ReactNode }) {
     const { pathname } = useLocation()
-    const { token } = useAuth()
+    const { token, logout } = useAuth()
     const { activeCourses } = useCourses()
+    const navigate = useNavigate()
     const [user, setUser] = useState("")
     const [isCoursesOpen, setIsCoursesOpen] = useState(() => {
         const saved = localStorage.getItem('coursesMenuOpen')
         return saved ? JSON.parse(saved) : false
     })
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
     useEffect(() => {
         if (!token) return
@@ -78,16 +87,39 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                             Courses
                         </Link>
 
-                        <Link
-                            to="/settings"
-                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/settings") ? "bg-gray-200" : "hover:bg-gray-100"
-                                }`}
+                        <button
+                            onClick={() => setShowLogoutConfirm(true)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 w-full text-left"
                         >
                             <Settings className="w-4 h-4 mr-4" />
-                            Settings
-                        </Link>
+                            Logout
+                        </button>
                     </nav>
                 </div>
+
+                {/* Logout Confirmation Modal */}
+                <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Confirm Logout</DialogTitle>
+                        </DialogHeader>
+                        <p>Are you sure you want to logout?</p>
+                        <DialogFooter>
+                            <Button onClick={() => setShowLogoutConfirm(false)}>
+                                Cancel
+                            </Button>
+                            <Button 
+                                className="bg-red-500 hover:bg-red-600"
+                                onClick={() => {
+                                    logout()
+                                    navigate("/login")
+                                }}
+                            >
+                                Logout
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
 
                 {/* Avatar Section Stuck to Bottom */}
                 {token && (
