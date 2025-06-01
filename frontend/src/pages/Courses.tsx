@@ -8,8 +8,9 @@ import { useNavigate } from "react-router-dom"
 import CourseCard from "../components/CourseCard"
 import Sidebar from "../components/Sidebar"
 import AddCourseModal from "../components/AddCourseModal"
-import { Plus } from "lucide-react"
+import { Plus, Pencil, Trash2, BookOpen } from "lucide-react"
 import { useToast } from "../hooks/use-toast"
+import { Link } from "react-router-dom"
 
 type Assignment = {
   id: number
@@ -26,6 +27,7 @@ type Course = {
   createdAt: string
   assignments?: Assignment[]
   grade?: number
+  credits: number
 }
 
 export default function Courses() {
@@ -35,6 +37,10 @@ export default function Courses() {
   const [userGpa, setUserGpa] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [editTarget, setEditTarget] = useState<Course | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
 
   const navigate = useNavigate()
 
@@ -162,28 +168,55 @@ export default function Courses() {
                   />
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filtered.map((course) => (
-                    <CourseCard 
-                      key={course.id} 
-                      course={course} 
-                      onDelete={handleDelete} 
-                      onUpdate={handleUpdate}
-                    />
+                    <div
+                      key={course.id}
+                      className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow"
+                    >
+                      <div className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-900">{course.name}</h3>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {course.credits} Credit{course.credits !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              className="p-2 hover:bg-gray-100"
+                              onClick={() => {
+                                setEditTarget(course)
+                                setIsEditDialogOpen(true)
+                              }}
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              className="p-2 hover:bg-gray-100"
+                              onClick={() => handleDelete(course.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-4 border-t">
+                          <div className="flex items-center gap-2">
+                            <BookOpen className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">
+                              {course.assignments?.length || 0} Assignment{course.assignments?.length !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                          <Link
+                            to={`/courses/${course.id}`}
+                            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                          >
+                            View Details →
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
                   ))}
-
-                  <AddCourseModal
-                    onCreate={handleCreate}
-                    trigger={
-                      <button
-                        className="aspect-square w-full border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-muted-foreground hover:border-gray-400 hover:bg-gray-100 transition"
-                      >
-                        <Plus className="w-8 h-8" />
-                        <span className="text-sm mt-1">Add Course</span>
-                      </button>
-                    }
-                    defaultActive={tab === "active"}
-                  />
                 </div>
               )}
             </TabsContent>

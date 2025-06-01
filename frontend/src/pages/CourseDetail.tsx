@@ -355,9 +355,12 @@ export default function CourseDetail() {
                     <div className="flex-1">
                       <h3 className="font-medium">{assignment.name}</h3>
                       <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                        <span>Grade: {assignment.grade.toFixed(1)}%</span>
-                        <span>Weight: {assignment.weight.toFixed(1)}%</span>
-                        <span>Contribution: {((assignment.grade * assignment.weight) / 100).toFixed(1)}%</span>
+                        <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md">
+                          Grade: {assignment.grade.toFixed(1)}%
+                        </span>
+                        <span className="px-2 py-1 bg-gray-50 text-gray-700 rounded-md">
+                          Weight: {assignment.weight.toFixed(1)}%
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
