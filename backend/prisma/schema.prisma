@@ -43,7 +43,7 @@ model Assignment {
 model UpcomingAssignment {
   id         Int      @id @default(autoincrement())
   name       String
-  status     String   // 'not_started' or 'in_progress'
+  status     String   // 'not_started', 'in_progress', or 'completed'
   deadline   DateTime
   courseId   Int
   createdAt  DateTime @default(now())

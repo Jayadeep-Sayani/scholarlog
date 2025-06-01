@@ -11,14 +11,14 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
-import { Plus, Play } from "lucide-react";
+import { Plus, Play, CheckCircle } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 
 interface Assignment {
   id: number;
   name: string;
   courseId: number;
-  status: 'not_started' | 'in_progress';
+  status: 'not_started' | 'in_progress' | 'completed';
   deadline: string;
 }
 
@@ -180,6 +180,43 @@ export default function UpcomingAssignments() {
     }
   };
 
+  const handleComplete = async (assignmentId: number) => {
+    try {
+      const assignment = assignments.find(a => a.id === assignmentId);
+      if (!assignment) return;
+
+      await axios.put(
+        `https://scholarlog-api.onrender.com/api/upcoming-assignments/${assignmentId}`,
+        {
+          name: assignment.name,
+          status: 'completed',
+          deadline: assignment.deadline
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Update local state
+      setAssignments(prev =>
+        prev.map(assignment =>
+          assignment.id === assignmentId
+            ? { ...assignment, status: 'completed' }
+            : assignment
+        )
+      );
+
+      toast({
+        title: "Assignment Completed",
+        description: "The assignment has been marked as completed.",
+      });
+    } catch (err) {
+      console.error("Failed to complete assignment:", err);
+      toast({
+        title: "Error",
+        description: "Failed to mark assignment as completed. Please try again.",
+      });
+    }
+  };
+
   // Get today's date in YYYY-MM-DD format
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -191,10 +228,16 @@ export default function UpcomingAssignments() {
         return { text: 'Not Started', className: 'bg-gray-100 text-gray-800' };
       case 'in_progress':
         return { text: 'In Progress', className: 'bg-blue-100 text-blue-800' };
+      case 'completed':
+        return { text: 'Completed', className: 'bg-green-100 text-green-800' };
       default:
         return { text: status, className: 'bg-gray-100 text-gray-800' };
     }
   };
+
+  // Filter assignments
+  const activeAssignments = assignments.filter(a => a.status !== 'completed');
+  const completedAssignments = assignments.filter(a => a.status === 'completed');
 
   return (
     <SidebarLayout>
@@ -293,17 +336,17 @@ export default function UpcomingAssignments() {
           </Dialog>
         </div>
 
-        {/* Assignments List */}
-        <div>
+        {/* Active Assignments List */}
+        <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Your Assignments</h2>
-          {assignments.length === 0 ? (
+          {activeAssignments.length === 0 ? (
             <div className="text-center text-muted-foreground py-10">
               <p className="text-lg">No upcoming assignments found.</p>
               <p className="text-sm">Click the button above to add your first assignment.</p>
             </div>
           ) : (
             <div className="grid gap-4">
-              {assignments.map(assignment => {
+              {activeAssignments.map(assignment => {
                 const dueDateInfo = getDueDateDisplay(assignment.deadline);
                 const statusInfo = getStatusDisplay(assignment.status);
                 return (
@@ -337,6 +380,15 @@ export default function UpcomingAssignments() {
                           Set to In Progress
                         </Button>
                       )}
+                      {assignment.status === 'in_progress' && (
+                        <Button
+                          className="flex items-center gap-2 border border-gray-300 hover:bg-gray-100"
+                          onClick={() => handleComplete(assignment.id)}
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          Complete
+                        </Button>
+                      )}
                       <Button
                         className="text-gray-600 hover:bg-gray-100"
                         onClick={() => handleDelete(assignment.id)}
@@ -350,6 +402,50 @@ export default function UpcomingAssignments() {
             </div>
           )}
         </div>
+
+        {/* Completed Assignments List */}
+        {completedAssignments.length > 0 && (
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Completed Assignments</h2>
+            <div className="grid gap-4">
+              {completedAssignments.map(assignment => {
+                const dueDateInfo = getDueDateDisplay(assignment.deadline);
+                const statusInfo = getStatusDisplay(assignment.status);
+                return (
+                  <div
+                    key={assignment.id}
+                    className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between"
+                  >
+                    <div>
+                      <h3 className="font-semibold">{assignment.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-sm text-muted-foreground">
+                          {activeCourses.find(c => c.id === assignment.courseId)?.name}
+                        </span>
+                        <span className="text-sm text-muted-foreground">•</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.className}`}>
+                          {statusInfo.text}
+                        </span>
+                        <span className="text-sm text-muted-foreground">•</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${dueDateInfo.className}`}>
+                          {dueDateInfo.text}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        className="text-gray-600 hover:bg-gray-100"
+                        onClick={() => handleDelete(assignment.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </SidebarLayout>
   );
