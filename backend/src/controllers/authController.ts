@@ -125,15 +125,27 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
+    const users = await prisma.$queryRaw<{ id: number; password: string; isVerified: boolean }[]>`
+      SELECT id, password, "isVerified" FROM "User" WHERE email = ${email}
+    `;
+
+    if (!users || users.length === 0) {
       res.status(401).json({ error: 'Invalid credentials' });
       return;
     }
 
+    const user = users[0];
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       res.status(401).json({ error: 'Invalid credentials' });
+      return;
+    }
+
+    if (!user.isVerified) {
+      res.status(200).json({ 
+        requiresVerification: true,
+        userId: user.id
+      });
       return;
     }
 
@@ -144,7 +156,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({ 
       message: 'Login successful', 
       token,
-      isVerified: user.isVerified
+      requiresVerification: false
     });
   } catch (error) {
     console.error('Login Error:', error);

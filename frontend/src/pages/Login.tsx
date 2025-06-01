@@ -36,17 +36,17 @@ export default function Login() {
         email,
         password,
       })
-      localStorage.setItem("token", res.data.token)
       
-      if (!res.data.isVerified) {
+      if (res.data.requiresVerification) {
         setUserId(res.data.userId)
         setIsVerifying(true)
         setError("Please verify your email to continue")
       } else {
+        localStorage.setItem("token", res.data.token)
         window.location.href = "/dashboard"
       }
     } catch (err: any) {
-      setError("Invalid credentials")
+      setError(err.response?.data?.error || "Invalid credentials")
     }
   }
 
