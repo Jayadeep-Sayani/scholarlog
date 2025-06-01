@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
 import axios from "axios"
 import { Button } from "../components/ui/button"
-import { LayoutDashboard, BookOpen, Settings, ClipboardList } from "lucide-react" // Added ClipboardList icon
+import { LayoutDashboard, BookOpen, Settings, ClipboardList, LogOut } from "lucide-react" // Added LogOut icon
 import { Avatar, AvatarFallback } from "../components/ui/avatar"
 import {
     Accordion,
@@ -70,15 +70,6 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                         </Link>
 
                         <Link
-                            to="/assignments"
-                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/assignments") ? "bg-gray-200" : "hover:bg-gray-100"
-                                }`}
-                        >
-                            <ClipboardList className="w-4 h-4 mr-4" />
-                            Upcoming
-                        </Link>
-
-                        <Link
                             to="/courses"
                             className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/courses") ? "bg-gray-200" : "hover:bg-gray-100"
                                 }`}
@@ -87,13 +78,14 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                             Courses
                         </Link>
 
-                        <button
-                            onClick={() => setShowLogoutConfirm(true)}
-                            className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 w-full text-left"
+                        <Link
+                            to="/assignments"
+                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/assignments") ? "bg-gray-200" : "hover:bg-gray-100"
+                                }`}
                         >
-                            <Settings className="w-4 h-4 mr-4" />
-                            Logout
-                        </button>
+                            <ClipboardList className="w-4 h-4 mr-4" />
+                            Upcoming
+                        </Link>
                     </nav>
                 </div>
 
@@ -123,7 +115,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
                 {/* Avatar Section Stuck to Bottom */}
                 {token && (
-                    <div className="mt-6">
+                    <div className="mt-6 space-y-4">
                         <div className="flex items-center gap-3 p-3 border bg-muted">
                             <Avatar className="h-8 w-8 bg-gray-200 text-center text-sm font-bold">
                                 <AvatarFallback>
@@ -140,6 +132,14 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                                 </span>
                             </div>
                         </div>
+
+                        <button
+                            onClick={() => setShowLogoutConfirm(true)}
+                            className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-red-50 text-red-600 w-full text-left border border-red-200"
+                        >
+                            <LogOut className="w-4 h-4 mr-4" />
+                            Logout
+                        </button>
                     </div>
                 )}
             </aside>
