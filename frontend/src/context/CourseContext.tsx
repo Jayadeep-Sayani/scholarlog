@@ -6,10 +6,10 @@ type Course = {
   id: number
   name: string
   isActive: boolean
+  credits: number
   createdAt: string
   assignments?: Assignment[]
   grade?: number
-  credits: number
 }
 
 type Assignment = {

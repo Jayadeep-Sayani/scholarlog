@@ -12,8 +12,8 @@ type Course = {
   id: number
   name: string
   isActive: boolean
-  grade?: number
   credits: number
+  grade?: number
 }
 
 type Props = {

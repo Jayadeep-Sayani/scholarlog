@@ -19,15 +19,13 @@ router.get("/", verifyToken, async (req: AuthRequest, res) => {
 router.post("/", verifyToken, async (req: AuthRequest, res: Response) => {
   const { name, isActive, credits } = req.body
 
-  const courseData = {
-    name,
-    isActive: isActive ?? true,
-    credits: credits ?? 3,
-    userId: req.userId!
-  } as Prisma.CourseUncheckedCreateInput
-
   const course = await prisma.course.create({
-    data: courseData
+    data: {
+      name,
+      isActive: isActive ?? true,
+      credits: credits ?? 3,
+      userId: req.userId!,
+    } as Prisma.CourseUncheckedCreateInput,
   })
 
   res.status(201).json(course)
@@ -60,18 +58,16 @@ router.put("/:id", verifyToken, async (req: AuthRequest, res: Response) => {
     return  
   }
 
-  const courseData = {
-    name,
-    isActive,
-    credits: credits ?? 3
-  } as Prisma.CourseUncheckedUpdateInput
-
   const updated = await prisma.course.update({
     where: {
       id: courseId,
       userId: req.userId,
     },
-    data: courseData
+    data: {
+      name,
+      isActive,
+      credits: credits ?? 3,
+    } as Prisma.CourseUncheckedUpdateInput,
   })
 
   res.json(updated)
@@ -85,12 +81,13 @@ router.get("/with-grade", verifyToken, async (req: AuthRequest, res) => {
     orderBy: { createdAt: "desc" },
   })
 
-  const coursesWithGPA = courses.map((course) => {
+  const coursesWithGPA = courses.map((course: any) => {
     const grade = calculateWeightedGPA(course.assignments)
     return {
       id: course.id,
       name: course.name,
       isActive: course.isActive,
+      credits: course.credits,
       createdAt: course.createdAt,
       grade,
     }

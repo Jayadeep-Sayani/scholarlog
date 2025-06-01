@@ -12,8 +12,8 @@ type Props = {
         id: number
         name: string
         isActive: boolean
-        grade?: number // optional GPA from backend
         credits: number
+        grade?: number // optional GPA from backend
     }
     onDelete: (id: number) => void
     onUpdate?: (id: number, name: string, isActive: boolean, credits: number) => void
