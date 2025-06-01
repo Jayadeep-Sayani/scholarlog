@@ -9,6 +9,7 @@ import CourseDetail from "./pages/CourseDetail"
 import Assignments from "./pages/UpcomingAssignments"
 import { PrivateRoute } from "./components/PrivateRoute"
 import { Toaster } from "./components/ui/toaster"
+import Landing from "./pages/Landing"
 
 export default function App() {
   return (
@@ -18,7 +19,7 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/" element={<Landing />} />
 
             <Route
               path="/dashboard"
