@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
 import axios from "axios"
 import { Button } from "../components/ui/button"
-import { LayoutDashboard, BookOpen, Settings, ClipboardList, LogOut, Menu, X } from "lucide-react"
+import { LayoutDashboard, BookOpen, Settings, ClipboardList, LogOut } from "lucide-react" // Added LogOut icon
 import { Avatar, AvatarFallback } from "../components/ui/avatar"
 import {
     Accordion,
@@ -32,7 +32,6 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
         return saved ? JSON.parse(saved) : false
     })
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
     useEffect(() => {
         if (!token) return
@@ -51,41 +50,12 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
         localStorage.setItem('coursesMenuOpen', JSON.stringify(isCoursesOpen))
     }, [isCoursesOpen])
 
-    // Close mobile menu when route changes
-    useEffect(() => {
-        setIsMobileMenuOpen(false)
-    }, [pathname])
-
     const isActive = (path: string) => pathname === path
 
     return (
         <div className="flex h-screen overflow-hidden">
-            {/* Mobile Menu Button */}
-            <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md"
-            >
-                {isMobileMenuOpen ? (
-                    <X className="w-6 h-6" />
-                ) : (
-                    <Menu className="w-6 h-6" />
-                )}
-            </button>
-
-            {/* Backdrop */}
-            {isMobileMenuOpen && (
-                <div
-                    className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                />
-            )}
-
             {/* Sidebar */}
-            <aside className={`
-                fixed lg:static w-64 bg-white border-r px-4 py-6 flex flex-col h-screen z-40
-                transform transition-transform duration-200 ease-in-out
-                ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-            `}>
+            <aside className="w-64 bg-white border-r px-4 py-6 flex flex-col fixed h-screen">
                 <div className="flex-grow space-y-4">
                     <div className="text-2xl font-extrabold mb-4 ml-4">ScholarLog</div>
 
@@ -176,7 +146,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 bg-gray-50 lg:ml-64 overflow-y-auto h-screen pt-16 lg:pt-0">{children}</main>
+            <main className="flex-1 bg-gray-50 ml-64 overflow-y-auto h-screen">{children}</main>
         </div>
     )
 }
