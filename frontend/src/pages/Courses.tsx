@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 import CourseCard from "../components/CourseCard"
 import Sidebar from "../components/Sidebar"
 import AddCourseModal from "../components/AddCourseModal"
+import EditCourseModal from "../components/EditCourseModal"
 import { Plus, Pencil, Trash2, BookOpen } from "lucide-react"
 import { useToast } from "../hooks/use-toast"
 import { Link } from "react-router-dom"
@@ -195,6 +196,12 @@ export default function Courses() {
                             >
                               <Pencil className="w-4 h-4" />
                             </Button>
+                            <EditCourseModal
+                              course={course}
+                              onUpdate={handleUpdate}
+                              open={isEditDialogOpen && editTarget?.id === course.id}
+                              onOpenChange={setIsEditDialogOpen}
+                            />
                             <Button
                               className="p-2 hover:bg-gray-100"
                               onClick={() => handleDelete(course.id)}
@@ -234,59 +241,6 @@ export default function Courses() {
               )}
             </TabsContent>
           </Tabs>
-
-          {/* Edit Course Dialog */}
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Course</DialogTitle>
-              </DialogHeader>
-              {editTarget && (
-                <form onSubmit={(e) => {
-                  e.preventDefault()
-                  const form = e.target as HTMLFormElement
-                  const name = (form.elements.namedItem('name') as HTMLInputElement).value
-                  const credits = parseFloat((form.elements.namedItem('credits') as HTMLInputElement).value)
-                  handleUpdate(editTarget.id, name, editTarget.isActive, credits)
-                  setIsEditDialogOpen(false)
-                }} className="space-y-4">
-                  <div>
-                    <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Course Name
-                    </label>
-                    <input
-                      type="text"
-                      id="edit-name"
-                      name="name"
-                      defaultValue={editTarget.name}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="edit-credits" className="block text-sm font-medium text-gray-700 mb-1">
-                      Credits
-                    </label>
-                    <input
-                      type="number"
-                      id="edit-credits"
-                      name="credits"
-                      defaultValue={editTarget.credits}
-                      min="0"
-                      step="0.1"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <Button type="submit" className="w-full">
-                    Save Changes
-                  </Button>
-                </form>
-              )}
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
     </Sidebar>
