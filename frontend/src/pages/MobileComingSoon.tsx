@@ -15,18 +15,6 @@ export default function MobileComingSoon() {
           <p className="text-sm text-gray-500">
             We're working hard to bring you the full ScholarLog experience on mobile devices.
           </p>
-          <div className="flex flex-col gap-3">
-            <a href="https://scholarlog.vercel.app" target="_blank" rel="noopener noreferrer">
-              <Button className="w-full">
-                Visit Desktop Site
-              </Button>
-            </a>
-            <a href="mailto:support@scholarlog.com">
-              <Button className="w-full bg-white text-gray-900 border border-gray-200 hover:bg-gray-100">
-                Contact Us
-              </Button>
-            </a>
-          </div>
         </div>
       </div>
     </div>
