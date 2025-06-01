@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
-import { Plus, Play, CheckCircle } from "lucide-react";
+import { Plus, Play, CheckCircle, Star } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 
 interface Assignment {
@@ -22,7 +22,19 @@ interface Assignment {
   deadline: string;
 }
 
-function getDueDateDisplay(deadline: string): { text: string; className: string } {
+interface GradeDialogData {
+  isOpen: boolean;
+  assignmentId: number | null;
+  assignmentName: string;
+  courseId: number;
+}
+
+function getDueDateDisplay(deadline: string, status: string): { text: string; className: string } {
+  // If the assignment is completed, don't show due date
+  if (status === 'completed') {
+    return { text: '', className: '' };
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const dueDate = new Date(deadline);
@@ -55,6 +67,17 @@ export default function UpcomingAssignments() {
     deadline: '',
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [gradeDialog, setGradeDialog] = useState<GradeDialogData>({
+    isOpen: false,
+    assignmentId: null,
+    assignmentName: '',
+    courseId: 0,
+  });
+  const [gradeData, setGradeData] = useState({
+    name: '',
+    grade: '',
+    weight: '',
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -239,6 +262,71 @@ export default function UpcomingAssignments() {
   const activeAssignments = assignments.filter(a => a.status !== 'completed');
   const completedAssignments = assignments.filter(a => a.status === 'completed');
 
+  const handleGradeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!gradeDialog.assignmentId) return;
+
+    try {
+      // Create the graded assignment
+      await axios.post(
+        'https://scholarlog-api.onrender.com/api/assignments',
+        {
+          name: gradeData.name,
+          grade: parseFloat(gradeData.grade),
+          weight: parseFloat(gradeData.weight),
+          courseId: gradeDialog.courseId,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Delete the upcoming assignment
+      await axios.delete(
+        `https://scholarlog-api.onrender.com/api/upcoming-assignments/${gradeDialog.assignmentId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Update local state
+      setAssignments(prev => prev.filter(a => a.id !== gradeDialog.assignmentId));
+
+      // Close dialog and reset form
+      setGradeDialog({ isOpen: false, assignmentId: null, assignmentName: '', courseId: 0 });
+      setGradeData({ name: '', grade: '', weight: '' });
+
+      toast({
+        title: "Assignment Graded",
+        description: "The assignment has been added to your course grades.",
+      });
+    } catch (err) {
+      console.error("Failed to grade assignment:", err);
+      toast({
+        title: "Error",
+        description: "Failed to grade the assignment. Please try again.",
+      });
+    }
+  };
+
+  const handleGradeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setGradeData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const openGradeDialog = (assignment: Assignment) => {
+    setGradeDialog({
+      isOpen: true,
+      assignmentId: assignment.id,
+      assignmentName: assignment.name,
+      courseId: assignment.courseId,
+    });
+    setGradeData({
+      name: assignment.name,
+      grade: '',
+      weight: '',
+    });
+  };
+
   return (
     <SidebarLayout>
       <div className="container mx-auto px-4 py-8">
@@ -347,7 +435,7 @@ export default function UpcomingAssignments() {
           ) : (
             <div className="grid gap-4">
               {activeAssignments.map(assignment => {
-                const dueDateInfo = getDueDateDisplay(assignment.deadline);
+                const dueDateInfo = getDueDateDisplay(assignment.deadline, assignment.status);
                 const statusInfo = getStatusDisplay(assignment.status);
                 return (
                   <div
@@ -364,10 +452,14 @@ export default function UpcomingAssignments() {
                         <span className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.className}`}>
                           {statusInfo.text}
                         </span>
-                        <span className="text-sm text-muted-foreground">•</span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${dueDateInfo.className}`}>
-                          {dueDateInfo.text}
-                        </span>
+                        {dueDateInfo.text && (
+                          <>
+                            <span className="text-sm text-muted-foreground">•</span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${dueDateInfo.className}`}>
+                              {dueDateInfo.text}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -409,7 +501,6 @@ export default function UpcomingAssignments() {
             <h2 className="text-xl font-semibold mb-4">Completed Assignments</h2>
             <div className="grid gap-4">
               {completedAssignments.map(assignment => {
-                const dueDateInfo = getDueDateDisplay(assignment.deadline);
                 const statusInfo = getStatusDisplay(assignment.status);
                 return (
                   <div
@@ -426,13 +517,16 @@ export default function UpcomingAssignments() {
                         <span className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.className}`}>
                           {statusInfo.text}
                         </span>
-                        <span className="text-sm text-muted-foreground">•</span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${dueDateInfo.className}`}>
-                          {dueDateInfo.text}
-                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      <Button
+                        className="flex items-center gap-2 border border-gray-300 hover:bg-gray-100"
+                        onClick={() => openGradeDialog(assignment)}
+                      >
+                        <Star className="w-4 h-4" />
+                        Grade
+                      </Button>
                       <Button
                         className="text-gray-600 hover:bg-gray-100"
                         onClick={() => handleDelete(assignment.id)}
@@ -446,6 +540,74 @@ export default function UpcomingAssignments() {
             </div>
           </div>
         )}
+
+        {/* Grade Dialog */}
+        <Dialog open={gradeDialog.isOpen} onOpenChange={(open) => setGradeDialog(prev => ({ ...prev, isOpen: open }))}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Grade Assignment</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleGradeSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="grade-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Assignment Name
+                </label>
+                <input
+                  type="text"
+                  id="grade-name"
+                  name="name"
+                  value={gradeData.name}
+                  onChange={handleGradeChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-1">
+                  Grade (%)
+                </label>
+                <input
+                  type="number"
+                  id="grade"
+                  name="grade"
+                  value={gradeData.grade}
+                  onChange={handleGradeChange}
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="weight" className="block text-sm font-medium text-gray-700 mb-1">
+                  Weight (%)
+                </label>
+                <input
+                  type="number"
+                  id="weight"
+                  name="weight"
+                  value={gradeData.weight}
+                  onChange={handleGradeChange}
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+              >
+                Add Grade
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </SidebarLayout>
   );
