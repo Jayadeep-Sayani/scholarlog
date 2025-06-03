@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import prisma from '../utils/prisma';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import { Prisma, User } from '@prisma/client';
 
 interface UserWithVerification extends User {
@@ -10,14 +10,8 @@ interface UserWithVerification extends User {
   isVerified: boolean;
 }
 
-// Create a transporter for sending emails
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+// Initialize SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
@@ -49,19 +43,23 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 
     // Try to send verification email, but don't fail if email sending fails
     try {
-      if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
+      if (process.env.SENDGRID_API_KEY) {
+        console.log('Attempting to send verification email to:', email);
+        const msg = {
           to: email,
+          from: process.env.SENDGRID_FROM_EMAIL as string,
           subject: 'Verify your ScholarLog account',
           html: `
             <h1>Welcome to ScholarLog!</h1>
             <p>Your verification code is: <strong>${verificationCode}</strong></p>
             <p>Please enter this code to verify your account.</p>
           `,
-        });
+        };
+        
+        await sgMail.send(msg);
+        console.log('Verification email sent successfully');
       } else {
-        console.warn('Email credentials not configured. Skipping verification email.');
+        console.warn('SendGrid API key not configured. Skipping verification email.');
       }
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError);
