@@ -108,7 +108,8 @@ export default function Settings() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="UVic 9.0 Scale">UVic 9.0 Scale</SelectItem>
-                                                <SelectItem value="UBC 4.0 Scale">UBC 4.0 Scale</SelectItem>
+                                                <SelectItem value="UBC 4.0 Scale">UBC 4.33 Scale</SelectItem>
+                                                <SelectItem value="UBC 4.0 Scale">UBCO 4.33 Scale</SelectItem>
                                                 {/* Future scales can be added here */}
                                                 {/* <SelectItem value="standard4">Standard 4.0 Scale</SelectItem> */}
                                                 {/* <SelectItem value="scale10">10.0 Scale</SelectItem> */}
