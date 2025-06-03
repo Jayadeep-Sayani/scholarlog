@@ -34,7 +34,7 @@ router.get("/gpa", verifyToken, async (req: AuthRequest, res) => {
   })
 
   const gpa = calculateOverallGPA(coursesWithGPA, scaleType)
-  const maxScale = scaleType === 'ubc4' ? 4.33 : 9.0
+  const maxScale = scaleType === 'ubc4' ? 4.0 : 9.0
   res.json({ gpa, maxScale, scaleType })
 })
 
