@@ -40,7 +40,6 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => {
-                console.log("User data:", res.data)
                 setUser(res.data.user.email)
             })
     }, [token])

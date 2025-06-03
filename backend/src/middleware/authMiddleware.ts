@@ -17,7 +17,6 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: number, email: string };
-    console.log('Decoded token:', decoded);
     req.userId = decoded.userId;
     next();
   } catch (err) {

@@ -103,8 +103,6 @@ export default function EditCourseModal({ course, onUpdate, open, onOpenChange }
             headers: { Authorization: `Bearer ${token}` },
           }
         )
-
-        console.log("Final grade assignment added")
         
         // Refresh courses to update the grade display
         await fetchCourses()
