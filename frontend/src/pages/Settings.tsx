@@ -3,28 +3,43 @@ import Sidebar from "../components/Sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { useToast } from "../hooks/use-toast"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "../lib/utils"
+import { Input } from "../components/ui/input"
 import { useAuth } from "../context/AuthContext"
 import axios from "axios"
+import { ChevronDown, X } from "lucide-react"
 
 export default function Settings() {
     const [gpaScale, setGpaScale] = useState<string>("UVic 9.0 Scale")
     const [loading, setLoading] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [open, setOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+    const [searchQuery, setSearchQuery] = useState<string>("")
     const { token } = useAuth()
     const { toast } = useToast()
 
     const scales = [
-        { value: "UVic 9.0 Scale", label: "UVic 9.0 Scale" },
-        { value: "Camosun 9.0 Scale", label: "Camosun 9.0 Scale" },
-        { value: "UBC 4.33 Scale", label: "UBC 4.33 Scale" },
-        { value: "UBCO 4.33 Scale", label: "UBCO 4.33 Scale" },
+        "UVic 9.0 Scale",
+        "Camosun 9.0 Scale",
+        "UBC 4.33 Scale",
+        "UBCO 4.33 Scale"
     ]
+
+    const filteredScales = scales.filter(scale => 
+        scale.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement
+            if (!target.closest('.custom-select')) {
+                setIsOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     // Fetch user settings when component mounts
     useEffect(() => {
@@ -111,28 +126,51 @@ export default function Settings() {
                                         <label htmlFor="gpa-scale" className="text-sm font-medium text-gray-700 block mb-2">
                                             GPA Scale
                                         </label>
-                                        <Select
-                                            value={gpaScale}
-                                            onValueChange={setGpaScale}
-                                        >
-                                            <SelectTrigger id="gpa-scale" className="w-full bg-white border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                                <SelectValue placeholder="Select GPA scale" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                                                <SelectItem value="UVic 9.0 Scale" className="hover:bg-gray-100 cursor-pointer focus:bg-gray-100">
-                                                    UVic 9.0 Scale
-                                                </SelectItem>
-                                                <SelectItem value="Camosun 9.0 Scale" className="hover:bg-gray-100 cursor-pointer focus:bg-gray-100">
-                                                    Camosun 9.0 Scale
-                                                </SelectItem>
-                                                <SelectItem value="UBC 4.33 Scale" className="hover:bg-gray-100 cursor-pointer focus:bg-gray-100">
-                                                    UBC 4.33 Scale
-                                                </SelectItem>
-                                                <SelectItem value="UBCO 4.33 Scale" className="hover:bg-gray-100 cursor-pointer focus:bg-gray-100">
-                                                    UBCO 4.33 Scale
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                        <div className="custom-select relative">
+                                            <div 
+                                                className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 flex items-center justify-between cursor-pointer hover:border-gray-400"
+                                                onClick={() => setIsOpen(!isOpen)}
+                                            >
+                                                <span>{gpaScale}</span>
+                                                <ChevronDown className="h-4 w-4 text-gray-500" />
+                                            </div>
+                                            
+                                            {isOpen && (
+                                                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+                                                    <div className="p-2 border-b border-gray-200">
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="Search scales..."
+                                                            value={searchQuery}
+                                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                                            className="w-full"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        />
+                                                    </div>
+                                                    <div className="max-h-60 overflow-auto">
+                                                        {filteredScales.length > 0 ? (
+                                                            filteredScales.map((scale) => (
+                                                                <div
+                                                                    key={scale}
+                                                                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                                                                    onClick={() => {
+                                                                        setGpaScale(scale)
+                                                                        setIsOpen(false)
+                                                                        setSearchQuery("")
+                                                                    }}
+                                                                >
+                                                                    {scale}
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            <div className="px-3 py-2 text-gray-500">
+                                                                No scales found
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 
