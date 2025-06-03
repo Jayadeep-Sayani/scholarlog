@@ -111,45 +111,28 @@ export default function Settings() {
                                         <label htmlFor="gpa-scale" className="text-sm font-medium text-gray-700 block mb-2">
                                             GPA Scale
                                         </label>
-                                        <Popover open={open} onOpenChange={setOpen}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    role="combobox"
-                                                    aria-expanded={open}
-                                                    className="w-full justify-between bg-white border-gray-300"
-                                                >
-                                                    {gpaScale}
-                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-full p-0">
-                                                <Command>
-                                                    <CommandInput />
-                                                    <CommandEmpty>No scale found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {scales.map((scale) => (
-                                                            <CommandItem
-                                                                key={scale.value}
-                                                                value={scale.value}
-                                                                onSelect={(currentValue: string) => {
-                                                                    setGpaScale(currentValue)
-                                                                    setOpen(false)
-                                                                }}
-                                                                className="cursor-pointer hover:bg-gray-100"
-                                                            >
-                                                                <Check
-                                                                    className={cn(
-                                                                        "mr-2 h-4 w-4",
-                                                                        gpaScale === scale.value ? "opacity-100" : "opacity-0"
-                                                                    )}
-                                                                />
-                                                                {scale.label}
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
+                                        <Select
+                                            value={gpaScale}
+                                            onValueChange={setGpaScale}
+                                        >
+                                            <SelectTrigger id="gpa-scale" className="w-full bg-white border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                                <SelectValue placeholder="Select GPA scale" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                                                <SelectItem value="UVic 9.0 Scale" className="hover:bg-gray-100 cursor-pointer focus:bg-gray-100">
+                                                    UVic 9.0 Scale
+                                                </SelectItem>
+                                                <SelectItem value="Camosun 9.0 Scale" className="hover:bg-gray-100 cursor-pointer focus:bg-gray-100">
+                                                    Camosun 9.0 Scale
+                                                </SelectItem>
+                                                <SelectItem value="UBC 4.33 Scale" className="hover:bg-gray-100 cursor-pointer focus:bg-gray-100">
+                                                    UBC 4.33 Scale
+                                                </SelectItem>
+                                                <SelectItem value="UBCO 4.33 Scale" className="hover:bg-gray-100 cursor-pointer focus:bg-gray-100">
+                                                    UBCO 4.33 Scale
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                 </div>
 
