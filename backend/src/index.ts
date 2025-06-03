@@ -6,6 +6,7 @@ import courseRoutes from "./routes/courseRoutes"
 import assignmentRoutes from "./routes/assignmentRoutes"
 import gpaRoutes from "./routes/gpaRoutes"
 import upcomingAssignmentRoutes from "./routes/upcomingAssignmentRoutes"
+import userRoutes from "./routes/userRoutes"
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use('/api/auth', authRoutes);
 app.use("/api/courses", courseRoutes)
 app.use("/api/assignments", assignmentRoutes)
 app.use("/api/user", gpaRoutes)
+app.use("/api/user", userRoutes)
 app.use('/api/upcoming-assignments', upcomingAssignmentRoutes);
 
 app.get('/', (req: Request, res: Response) => {

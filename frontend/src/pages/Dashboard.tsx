@@ -11,6 +11,8 @@ export default function Dashboard() {
   const [gpaHistory, setGpaHistory] = useState([])
   const { token } = useAuth()
   const [userGpa, setUserGpa] = useState<number | null>(null)
+  const [maxScale, setMaxScale] = useState<number>(9.0)
+  const [scaleType, setScaleType] = useState<string>('uvic9')
 
   const fetchUserGpa = async () => {
     try {
@@ -18,21 +20,32 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
       })
       setUserGpa(res.data.gpa)
+      setMaxScale(res.data.maxScale || 9.0)
+      setScaleType(res.data.scaleType || 'uvic9')
     } catch (err) {
       console.error("Failed to fetch GPA", err)
     }
   }
 
+  const fetchGpaHistory = async () => {
+    try {
+      const res = await axios.get(
+        "https://scholarlog-api.onrender.com/api/user/gpa-history",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      setGpaHistory(res.data)
+      // Note: We're already getting the scale type from fetchUserGpa
+      // This is just a fallback in case we need it in the future
+    } catch (err) {
+      console.error("Failed to fetch GPA history", err)
+    }
+  }
+
   useEffect(() => {
     if (!token) return
-
-    axios
-      .get("https://scholarlog-api.onrender.com/api/user/gpa-history", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setGpaHistory(res.data))
-      .catch((err) => console.error("Failed to load GPA history", err))
-    
+    fetchGpaHistory()
     fetchUserGpa()
   }, [token])
 
@@ -45,14 +58,14 @@ export default function Dashboard() {
           <div className="mb-6 px-4 py-3 bg-white rounded-xl shadow flex items-center justify-between max-w-md">
             <p className="text-sm text-muted-foreground">Your Overall GPA</p>
             <p className="text-xl font-bold text-black">
-              {userGpa.toFixed(2)} / 9.0
+              {userGpa.toFixed(2)} / {maxScale.toFixed(2)}
             </p>
           </div>
         )}
         
         <div className="bg-white rounded-xl shadow p-4">
           <h3 className="text-lg font-semibold mb-4">GPA Trend</h3>
-          <GpaTrendChart data={gpaHistory} />
+          <GpaTrendChart data={gpaHistory} scaleType={scaleType} />
         </div>
         
         <div className="bg-white rounded-xl shadow p-4">

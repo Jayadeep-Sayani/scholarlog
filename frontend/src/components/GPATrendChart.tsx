@@ -3,9 +3,10 @@ import { useMemo } from "react"
 
 type Props = {
     data: { course: string; gpa: number; createdAt: string }[]
+    scaleType?: string
 }
 
-export default function GpaTrendChart({ data }: Props) {
+export default function GpaTrendChart({ data, scaleType = 'uvic9' }: Props) {
     // Generate sample data when there are 0 or 1 courses
     const chartData = useMemo(() => {
         if (data.length > 1) {
@@ -38,7 +39,7 @@ export default function GpaTrendChart({ data }: Props) {
                             style={{ fontSize: "12px" }}
                         />
                         <YAxis
-                            domain={[0, 9.0]}
+                            domain={[0, scaleType === 'ubc4' ? 4.33 : 9.0]}
                             stroke="#888"
                             tick={{ fill: "var(--text-muted)" }}
                             style={{ fontSize: "12px" }}

@@ -6,6 +6,15 @@ import { calculateWeightedGPA, calculateOverallGPA, mapGradeToGpa } from "../uti
 const router = express.Router()
 
 router.get("/gpa", verifyToken, async (req: AuthRequest, res) => {
+  // Get the user's preferred GPA scale
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    select: { gpaScale: true }
+  })
+
+  // Default to uvic9 if no preference is found
+  const scaleType = user?.gpaScale === 4.0 ? 'ubc4' : 'uvic9'
+  
   const courses = await prisma.course.findMany({
     where: {
       userId: req.userId,
@@ -24,11 +33,21 @@ router.get("/gpa", verifyToken, async (req: AuthRequest, res) => {
     }
   })
 
-  const gpa = calculateOverallGPA(coursesWithGPA)
-  res.json({ gpa })
+  const gpa = calculateOverallGPA(coursesWithGPA, scaleType)
+  const maxScale = scaleType === 'ubc4' ? 4.33 : 9.0
+  res.json({ gpa, maxScale, scaleType })
 })
 
 router.get("/gpa-history", verifyToken, async (req: AuthRequest, res) => {
+  // Get the user's preferred GPA scale
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    select: { gpaScale: true }
+  })
+
+  // Default to uvic9 if no preference is found
+  const scaleType = user?.gpaScale === 4.0 ? 'ubc4' : 'uvic9'
+  
   const courses = await prisma.course.findMany({
     where: {
       userId: req.userId,
@@ -48,7 +67,7 @@ router.get("/gpa-history", verifyToken, async (req: AuthRequest, res) => {
 
   for (const course of courses) {
     const weighted = calculateWeightedGPA(course.assignments)
-    const courseGPA = mapGradeToGpa(weighted)
+    const courseGPA = mapGradeToGpa(weighted, scaleType)
     
     totalPoints += courseGPA * (course as any).credits
     totalCredits += (course as any).credits
