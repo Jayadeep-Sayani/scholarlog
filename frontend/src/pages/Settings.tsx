@@ -1,9 +1,9 @@
 import { useState } from "react"
 import Sidebar from "../components/Sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 import { Button } from "../components/ui/button"
 import { useToast } from "../hooks/use-toast"
+import { SelectWithSearch } from "../components/ui/select-with-search"
 
 export default function Settings() {
   const [gpaScale, setGpaScale] = useState("uvic9")
@@ -36,20 +36,19 @@ export default function Settings() {
                 <label htmlFor="gpa-scale" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                   GPA Scale
                 </label>
-                <Select
+                <SelectWithSearch
+                  options={[
+                    { label: "UVic 9.0 Scale", value: "uvic9" },
+                    // Future scales can be uncommented when ready
+                    // { label: "Standard 4.0 Scale", value: "standard4" },
+                    // { label: "10.0 Scale", value: "scale10" },
+                  ]}
                   value={gpaScale}
                   onValueChange={setGpaScale}
-                >
-                  <SelectTrigger id="gpa-scale" className="mt-2">
-                    <SelectValue placeholder="Select GPA scale" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="uvic9">UVic 9.0 Scale</SelectItem>
-                    {/* Future scales can be added here */}
-                    {/* <SelectItem value="standard4">Standard 4.0 Scale</SelectItem> */}
-                    {/* <SelectItem value="scale10">10.0 Scale</SelectItem> */}
-                  </SelectContent>
-                </Select>
+                  placeholder="Select GPA scale"
+                  searchPlaceholder="Search GPA scales..."
+                  triggerClassName="mt-2"
+                />
               </div>
             </div>
 
