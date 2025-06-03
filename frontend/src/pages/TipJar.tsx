@@ -9,28 +9,28 @@ export default function TipJar() {
       description: "Support my work with a small donation",
       icon: <Coffee className="w-6 h-6" />,
       amount: 5,
-      link: "https://www.buymeacoffee.com/yourusername"
+      link: "coff.ee/jayadeeps10"
     },
     {
       title: "Show some love",
       description: "A medium-sized donation to keep me motivated",
       icon: <Heart className="w-6 h-6" />,
       amount: 10,
-      link: "https://www.buymeacoffee.com/yourusername"
+      link: "coff.ee/jayadeeps10"
     },
     {
       title: "Super supporter",
       description: "A generous donation that makes a big difference",
       icon: <Star className="w-6 h-6" />,
       amount: 25,
-      link: "https://www.buymeacoffee.com/yourusername"
+      link: "coff.ee/jayadeeps10"
     },
     {
       title: "Premium patron",
       description: "The ultimate show of support for my work",
       icon: <Sparkles className="w-6 h-6" />,
       amount: 50,
-      link: "https://www.buymeacoffee.com/yourusername"
+      link: "coff.ee/jayadeeps10"
     }
   ]
 
