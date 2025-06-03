@@ -6,7 +6,7 @@ import GpaTrendChart from "../components/GPATrendChart"
 import Sidebar from "../components/Sidebar"
 import AssignmentStats from "../components/AssignmentStats"
 import { Link } from "react-router-dom"
-import { Settings } from "lucide-react"
+import { Settings, Loader2 } from "lucide-react"
 
 export default function Dashboard() {
   const { logout } = useAuth()
@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [userGpa, setUserGpa] = useState<number | null>(null)
   const [maxScale, setMaxScale] = useState<number>(9.0)
   const [scaleType, setScaleType] = useState<string>('uvic9')
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchUserGpa = async () => {
     try {
@@ -38,10 +39,10 @@ export default function Dashboard() {
         }
       )
       setGpaHistory(res.data)
-      // Note: We're already getting the scale type from fetchUserGpa
-      // This is just a fallback in case we need it in the future
     } catch (err) {
       console.error("Failed to fetch GPA history", err)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -50,6 +51,22 @@ export default function Dashboard() {
     fetchGpaHistory()
     fetchUserGpa()
   }, [token])
+
+  if (isLoading) {
+    return (
+      <Sidebar>
+        <div className="p-6 space-y-6">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <div className="flex justify-center items-center h-[60vh]">
+            <div className="flex flex-col items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+            </div>
+          </div>
+        </div>
+      </Sidebar>
+    )
+  }
 
   return (
     <Sidebar>
