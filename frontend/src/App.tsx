@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard"
 import Courses from "./pages/Courses"
 import CourseDetail from "./pages/CourseDetail"
 import Assignments from "./pages/UpcomingAssignments"
+import TipJar from "./pages/TipJar"
 import { PrivateRoute } from "./components/PrivateRoute"
 import { Toaster } from "./components/ui/toaster"
 import Landing from "./pages/Landing"
@@ -22,7 +23,7 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-              <Route path="/" element={<Landing />} />
+            <Route path="/" element={<Landing />} />
 
             <Route
               path="/dashboard"
@@ -56,6 +57,15 @@ export default function App() {
               element={
                 <PrivateRoute>
                   <Assignments />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/tip-jar"
+              element={
+                <PrivateRoute>
+                  <TipJar />
                 </PrivateRoute>
               }
             />

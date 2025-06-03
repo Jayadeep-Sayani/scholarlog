@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
 import axios from "axios"
 import { Button } from "../components/ui/button"
-import { LayoutDashboard, BookOpen, Settings, ClipboardList, LogOut } from "lucide-react" // Added LogOut icon
+import { LayoutDashboard, BookOpen, Settings, ClipboardList, LogOut, Heart } from "lucide-react" // Added Heart icon
 import { Avatar, AvatarFallback } from "../components/ui/avatar"
 import {
     Accordion,
@@ -86,6 +86,16 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                         >
                             <ClipboardList className="w-4 h-4 mr-4" />
                             Tasks
+                        </Link>
+
+                        <Link
+                            to="/tip-jar"
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 ${
+                                pathname === "/tip-jar" ? "bg-gray-100" : ""
+                            }`}
+                        >
+                            <Heart className="w-4 h-4 mr-4" />
+                            Tip Jar
                         </Link>
                     </nav>
                 </div>
