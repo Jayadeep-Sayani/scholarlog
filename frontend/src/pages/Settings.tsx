@@ -79,21 +79,21 @@ export default function Settings() {
             <div className="p-6 space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold">Settings</h1>
+                        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Settings</h1>
                         <p className="text-muted-foreground mt-1">Customize your ScholarLog experience</p>
                     </div>
                 </div>
 
                 <div className="grid gap-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
+                    <Card className="border-2 border-border/50 hover:border-primary/50 transition-colors duration-200">
+                        <CardHeader className="space-y-3">
+                            <CardTitle className="flex items-center gap-2 text-xl">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                                     <path d="M12 20v-6M6 20V10M18 20V4"/>
                                 </svg>
                                 GPA Scale
                             </CardTitle>
-                            <CardDescription>
+                            <CardDescription className="text-base">
                                 Choose your preferred GPA scale for calculations and display. This will affect how your grades are calculated and displayed throughout the application.
                             </CardDescription>
                         </CardHeader>
@@ -114,7 +114,7 @@ export default function Settings() {
                                                 value={gpaScale}
                                                 onValueChange={setGpaScale}
                                             >
-                                                <SelectTrigger id="gpa-scale" className="w-full">
+                                                <SelectTrigger id="gpa-scale" className="w-full h-12">
                                                     <SelectValue placeholder="Select GPA scale" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -124,11 +124,6 @@ export default function Settings() {
                                                     <SelectItem value="UBCO 4.33 Scale">UBCO 4.33 Scale</SelectItem>
                                                 </SelectContent>
                                             </Select>
-                                            <p className="text-sm text-muted-foreground">
-                                                {gpaScale.includes("4.33") 
-                                                    ? "Using a 4.33 scale (A+ = 4.33, A = 4.00, A- = 3.67, etc.)"
-                                                    : "Using a 9.0 scale (A+ = 9.0, A = 8.0, A- = 7.0, etc.)"}
-                                            </p>
                                         </div>
                                     </div>
 
@@ -136,7 +131,7 @@ export default function Settings() {
                                         <Button 
                                             onClick={handleSaveSettings} 
                                             disabled={loading}
-                                            className="min-w-[100px]"
+                                            className="min-w-[120px] h-10 bg-primary hover:bg-primary/90"
                                         >
                                             {loading ? (
                                                 <>
