@@ -76,78 +76,62 @@ export default function Settings() {
 
     return (
         <Sidebar>
-            <div className="p-6 space-y-8">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Settings</h1>
-                        <p className="text-muted-foreground mt-1">Customize your ScholarLog experience</p>
-                    </div>
-                </div>
+            <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+                <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
 
-                <div className="grid gap-6">
-                    <Card className="border-2 border-border/50 hover:border-primary/50 transition-colors duration-200">
-                        <CardHeader className="space-y-3">
-                            <CardTitle className="flex items-center gap-2 text-xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                                    <path d="M12 20v-6M6 20V10M18 20V4"/>
-                                </svg>
-                                GPA Scale
-                            </CardTitle>
-                            <CardDescription className="text-base">
-                                Choose your preferred GPA scale for calculations and display. This will affect how your grades are calculated and displayed throughout the application.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            {isLoading ? (
-                                <div className="flex items-center justify-center py-8">
-                                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                                    <span className="ml-3 text-muted-foreground">Loading settings...</span>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="grid gap-4">
-                                        <div className="space-y-2">
-                                            <label htmlFor="gpa-scale" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                                Select Your Institution's GPA Scale
-                                            </label>
-                                            <Select
-                                                value={gpaScale}
-                                                onValueChange={setGpaScale}
-                                            >
-                                                <SelectTrigger id="gpa-scale" className="w-full h-12">
-                                                    <SelectValue placeholder="Select GPA scale" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="UVic 9.0 Scale">UVic 9.0 Scale</SelectItem>
-                                                    <SelectItem value="Camosun 9.0 Scale">Camosun 9.0 Scale</SelectItem>
-                                                    <SelectItem value="UBC 4.33 Scale">UBC 4.33 Scale</SelectItem>
-                                                    <SelectItem value="UBCO 4.33 Scale">UBCO 4.33 Scale</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex justify-end pt-4 border-t">
-                                        <Button 
-                                            onClick={handleSaveSettings} 
-                                            disabled={loading}
-                                            className="min-w-[120px] h-10 bg-primary hover:bg-primary/90"
+                <Card className="bg-white shadow-md">
+                    <CardHeader className="border-b border-gray-200">
+                        <CardTitle className="text-xl text-gray-900">GPA Scale</CardTitle>
+                        <CardDescription className="text-gray-600">
+                            Choose your preferred GPA scale for calculations and display.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-6">
+                        {isLoading ? (
+                            <div className="flex items-center justify-center py-8">
+                                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-900 border-t-transparent"></div>
+                                <span className="ml-3 text-gray-700">Loading settings...</span>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-4 gap-4">
+                                    <div className="col-span-4 sm:col-span-2">
+                                        <label htmlFor="gpa-scale" className="text-sm font-medium text-gray-700 block mb-2">
+                                            GPA Scale
+                                        </label>
+                                        <Select
+                                            value={gpaScale}
+                                            onValueChange={setGpaScale}
                                         >
-                                            {loading ? (
-                                                <>
-                                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent mr-2"></div>
-                                                    Saving...
-                                                </>
-                                            ) : (
-                                                "Save Changes"
-                                            )}
-                                        </Button>
+                                            <SelectTrigger id="gpa-scale" className="w-full bg-white border-gray-300">
+                                                <SelectValue placeholder="Select GPA scale" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                                                <SelectItem value="UVic 9.0 Scale">UVic 9.0 Scale</SelectItem>
+                                                <SelectItem value="Camosun 9.0 Scale">Camosun 9.0 Scale</SelectItem>
+                                                <SelectItem value="UBC 4.33 Scale">UBC 4.33 Scale</SelectItem>
+                                                <SelectItem value="UBCO 4.33 Scale">UBCO 4.33 Scale</SelectItem>
+                                                {/* Future scales can be added here */}
+                                                {/* <SelectItem value="standard4">Standard 4.0 Scale</SelectItem> */}
+                                                {/* <SelectItem value="scale10">10.0 Scale</SelectItem> */}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
-                                </>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
+                                </div>
+
+                                <div className="flex justify-end pt-4">
+                                    <Button 
+                                        onClick={handleSaveSettings} 
+                                        disabled={loading}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                                    >
+                                        {loading ? "Saving..." : "Save Changes"}
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </Sidebar>
     )
