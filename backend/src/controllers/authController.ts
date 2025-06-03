@@ -123,8 +123,8 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   try {
-    const users = await prisma.$queryRaw<{ id: number; password: string; isVerified: boolean }[]>`
-      SELECT id, password, "isVerified" FROM "User" WHERE email = ${email}
+    const users = await prisma.$queryRaw<{ id: number; password: string; isVerified: boolean; verificationCode: string | null }[]>`
+      SELECT id, password, "isVerified", "verificationCode" FROM "User" WHERE email = ${email}
     `;
 
     if (!users || users.length === 0) {
@@ -140,9 +140,43 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (!user.isVerified) {
+      // Generate new verification code
+      const newVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Update user with new verification code
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          verificationCode: newVerificationCode
+        }
+      });
+
+      // Send new verification email
+      try {
+        if (process.env.SENDGRID_API_KEY) {
+          console.log('Resending verification email to:', email);
+          const msg = {
+            to: email,
+            from: process.env.SENDGRID_FROM_EMAIL as string,
+            subject: 'Verify your ScholarLog account',
+            html: `
+              <h1>Welcome back to ScholarLog!</h1>
+              <p>Your new verification code is: <strong>${newVerificationCode}</strong></p>
+              <p>Please enter this code to verify your account.</p>
+            `,
+          };
+          
+          await sgMail.send(msg);
+          console.log('Verification email resent successfully');
+        }
+      } catch (emailError) {
+        console.error('Failed to resend verification email:', emailError);
+      }
+
       res.status(200).json({ 
         requiresVerification: true,
-        userId: user.id
+        userId: user.id,
+        message: 'New verification code sent to your email'
       });
       return;
     }
