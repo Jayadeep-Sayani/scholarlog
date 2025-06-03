@@ -165,7 +165,12 @@ export default function Courses() {
                   <p className="text-sm">Click the button below to add your first course.</p>
                   <AddCourseModal
                     onCreate={handleCreate}
-                    trigger={<Button className="mt-4">Add Course</Button>}
+                    trigger={
+                      <Button className="mt-4 flex items-center gap-2">
+                        <Plus className="w-4 h-4" />
+                        Add Course
+                      </Button>
+                    }
                     defaultActive={tab === "active"}
                   />
                 </div>
