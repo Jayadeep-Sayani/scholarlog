@@ -8,6 +8,7 @@ import Courses from "./pages/Courses"
 import CourseDetail from "./pages/CourseDetail"
 import Assignments from "./pages/UpcomingAssignments"
 import TipJar from "./pages/TipJar"
+import Settings from "./pages/Settings"
 import { PrivateRoute } from "./components/PrivateRoute"
 import { Toaster } from "./components/ui/toaster"
 import Landing from "./pages/Landing"
@@ -66,6 +67,15 @@ export default function App() {
               element={
                 <PrivateRoute>
                   <TipJar />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <Settings />
                 </PrivateRoute>
               }
             />
