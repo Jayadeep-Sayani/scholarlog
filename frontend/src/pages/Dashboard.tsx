@@ -56,7 +56,14 @@ export default function Dashboard() {
         
         {userGpa !== null && (
           <div className="mb-6 px-4 py-3 bg-white rounded-xl shadow flex items-center justify-between max-w-md">
-            <p className="text-sm text-muted-foreground">Your Overall GPA</p>
+            <div>
+              <p className="text-sm text-muted-foreground">Your Overall GPA</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {scaleType === 'ubc4' ? 'UBC 4.33 Scale' : 
+                 scaleType === 'ubco4' ? 'UBCO 4.33 Scale' :
+                 scaleType === 'camosun9' ? 'Camosun 9.0 Scale' : 'UVic 9.0 Scale'}
+              </p>
+            </div>
             <p className="text-xl font-bold text-black">
               {userGpa.toFixed(2)} / {maxScale.toFixed(2)}
             </p>
