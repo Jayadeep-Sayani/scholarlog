@@ -1,76 +1,35 @@
 import { Button } from "../components/ui/button"
 import Sidebar from "../components/Sidebar"
-import { Coffee, Heart, Star, Sparkles } from "lucide-react"
+import { Coffee } from "lucide-react"
 
 export default function TipJar() {
-  const donationOptions = [
-    {
-      title: "Buy me a coffee",
-      description: "Support my work with a small donation",
-      icon: <Coffee className="w-6 h-6" />,
-      amount: 5,
-      link: "coff.ee/jayadeeps10"
-    },
-    {
-      title: "Show some love",
-      description: "A medium-sized donation to keep me motivated",
-      icon: <Heart className="w-6 h-6" />,
-      amount: 10,
-      link: "coff.ee/jayadeeps10"
-    },
-    {
-      title: "Super supporter",
-      description: "A generous donation that makes a big difference",
-      icon: <Star className="w-6 h-6" />,
-      amount: 25,
-      link: "coff.ee/jayadeeps10"
-    },
-    {
-      title: "Premium patron",
-      description: "The ultimate show of support for my work",
-      icon: <Sparkles className="w-6 h-6" />,
-      amount: 50,
-      link: "coff.ee/jayadeeps10"
-    }
-  ]
-
   return (
     <Sidebar>
       <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-10">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">Tip Jar</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              If you find ScholarLog helpful and want to support its development, consider buying me a coffee or making a donation. Every contribution helps keep the project going!
+              If you find ScholarLog helpful and want to support its development, consider buying me a coffee. Every contribution helps keep the project going!
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            {donationOptions.map((option, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-                    {option.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold">{option.title}</h3>
-                    <p className="text-sm text-muted-foreground">{option.description}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold">${option.amount}</span>
-                  <Button
-                    onClick={() => window.open(option.link, '_blank')}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    Donate
-                  </Button>
-                </div>
+          <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 mb-12">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="p-4 bg-blue-50 rounded-lg text-blue-600">
+                <Coffee className="w-8 h-8" />
               </div>
-            ))}
+              <div>
+                <h3 className="text-2xl font-semibold">Buy me a coffee</h3>
+                <p className="text-muted-foreground">Support my work with a small donation</p>
+              </div>
+            </div>
+            <Button
+              onClick={() => window.open("https://coff.ee/jayadeeps10", '_blank')}
+              className="w-full bg-blue-600 hover:bg-blue-700 py-6 text-lg"
+            >
+              Donate
+            </Button>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
