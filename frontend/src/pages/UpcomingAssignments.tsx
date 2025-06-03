@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useCourses } from '../context/CourseContext';
 import { useAuth } from '../context/AuthContext';
 import SidebarLayout from '../components/Sidebar';
@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
-import { Plus, Play, CheckCircle, Star } from "lucide-react";
+import { Plus, Play, CheckCircle, Star, Loader2 } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 
 interface Assignment {
@@ -27,6 +27,12 @@ interface GradeDialogData {
   assignmentId: number | null;
   assignmentName: string;
   courseId: number;
+}
+
+// Cache for assignments data
+interface AssignmentsCache {
+  data: Assignment[] | null;
+  timestamp: number | null;
 }
 
 function getDueDateDisplay(deadline: string, status: string): { text: string; className: string } {
@@ -78,23 +84,56 @@ export default function UpcomingAssignments() {
     grade: '',
     weight: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [cache, setCache] = useState<AssignmentsCache>({
+    data: null,
+    timestamp: null
+  });
   const { toast } = useToast();
 
-  useEffect(() => {
+  // Cache expiration time (5 minutes)
+  const CACHE_EXPIRATION = 5 * 60 * 1000;
+
+  const fetchAssignments = async () => {
     if (!token) return;
     
-    // Fetch assignments when component mounts
-    axios.get('https://scholarlog-api.onrender.com/api/upcoming-assignments', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => setAssignments(res.data))
-    .catch(err => {
+    // Check if we have valid cached data
+    const now = Date.now();
+    if (cache.data && cache.timestamp && (now - cache.timestamp < CACHE_EXPIRATION)) {
+      setAssignments(cache.data);
+      return;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const res = await axios.get('https://scholarlog-api.onrender.com/api/upcoming-assignments', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setAssignments(res.data);
+      
+      // Update cache
+      setCache({
+        data: res.data,
+        timestamp: Date.now()
+      });
+    } catch (err) {
       console.error('Failed to fetch assignments:', err);
+      setError(err instanceof Error ? err : new Error('Failed to fetch assignments'));
       toast({
         title: "Error",
         description: "Failed to fetch assignments. Please try again.",
       });
-    });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAssignments();
   }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -117,6 +156,14 @@ export default function UpcomingAssignments() {
       setAssignments(prev => [...prev, response.data].sort((a, b) => 
         new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
       ));
+      
+      // Update cache
+      setCache({
+        data: [...(cache.data || []), response.data].sort((a, b) => 
+          new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+        ),
+        timestamp: Date.now()
+      });
       
       setFormData({
         name: '',
@@ -144,7 +191,16 @@ export default function UpcomingAssignments() {
       await axios.delete(`https://scholarlog-api.onrender.com/api/upcoming-assignments/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setAssignments(prev => prev.filter(a => a.id !== id));
+      
+      const updatedAssignments = assignments.filter(a => a.id !== id);
+      setAssignments(updatedAssignments);
+      
+      // Update cache
+      setCache({
+        data: updatedAssignments,
+        timestamp: Date.now()
+      });
+      
       toast({
         title: "Assignment deleted",
         description: "The upcoming assignment has been successfully deleted.",
@@ -182,13 +238,19 @@ export default function UpcomingAssignments() {
       );
 
       // Update local state
-      setAssignments(prev =>
-        prev.map(assignment =>
-          assignment.id === assignmentId
-            ? { ...assignment, status: 'in_progress' }
-            : assignment
-        )
+      const updatedAssignments = assignments.map(assignment =>
+        assignment.id === assignmentId
+          ? { ...assignment, status: 'in_progress' }
+          : assignment
       );
+      
+      setAssignments(updatedAssignments as Assignment[]);
+      
+      // Update cache
+      setCache({
+        data: updatedAssignments as Assignment[],
+        timestamp: Date.now()
+      });
 
       toast({
         title: "Status Updated",
@@ -219,13 +281,19 @@ export default function UpcomingAssignments() {
       );
 
       // Update local state
-      setAssignments(prev =>
-        prev.map(assignment =>
-          assignment.id === assignmentId
-            ? { ...assignment, status: 'completed' }
-            : assignment
-        )
+      const updatedAssignments = assignments.map(assignment =>
+        assignment.id === assignmentId
+          ? { ...assignment, status: 'completed' }
+          : assignment
       );
+      
+      setAssignments(updatedAssignments as Assignment[]);
+      
+      // Update cache
+      setCache({
+        data: updatedAssignments as Assignment[],
+        timestamp: Date.now()
+      });
 
       toast({
         title: "Assignment Completed",
@@ -258,9 +326,16 @@ export default function UpcomingAssignments() {
     }
   };
 
-  // Filter assignments
-  const activeAssignments = assignments.filter(a => a.status !== 'completed');
-  const completedAssignments = assignments.filter(a => a.status === 'completed');
+  // Memoize filtered assignments
+  const activeAssignments = useMemo(() => 
+    assignments.filter(a => a.status !== 'completed'),
+    [assignments]
+  );
+  
+  const completedAssignments = useMemo(() => 
+    assignments.filter(a => a.status === 'completed'),
+    [assignments]
+  );
 
   const handleGradeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -286,7 +361,14 @@ export default function UpcomingAssignments() {
       );
 
       // Update local state
-      setAssignments(prev => prev.filter(a => a.id !== gradeDialog.assignmentId));
+      const updatedAssignments = assignments.filter(a => a.id !== gradeDialog.assignmentId);
+      setAssignments(updatedAssignments);
+      
+      // Update cache
+      setCache({
+        data: updatedAssignments,
+        timestamp: Date.now()
+      });
 
       // Close dialog and reset form
       setGradeDialog({ isOpen: false, assignmentId: null, assignmentName: '', courseId: 0 });
@@ -326,6 +408,50 @@ export default function UpcomingAssignments() {
       weight: '',
     });
   };
+
+  // Render loading state
+  if (isLoading && !assignments.length) {
+    return (
+      <SidebarLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Upcoming</h1>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <div className="flex flex-col items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="mt-4 text-muted-foreground">Loading your assignments...</p>
+            </div>
+          </div>
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  // Render error state
+  if (error && !assignments.length) {
+    return (
+      <SidebarLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Upcoming</h1>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <div className="flex flex-col items-center text-center">
+              <p className="text-red-500 font-medium">Error loading assignments</p>
+              <p className="mt-2 text-muted-foreground max-w-md">We couldn't load your assignments. Please try again later.</p>
+              <Button 
+                className="mt-4" 
+                onClick={() => fetchAssignments()}
+              >
+                Try Again
+              </Button>
+            </div>
+          </div>
+        </div>
+      </SidebarLayout>
+    );
+  }
 
   return (
     <SidebarLayout>
@@ -423,6 +549,14 @@ export default function UpcomingAssignments() {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Loading indicator for refreshing data */}
+        {isLoading && assignments.length > 0 && (
+          <div className="flex items-center justify-center py-2 mb-4">
+            <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
+            <span className="text-sm text-muted-foreground">Refreshing...</span>
+          </div>
+        )}
 
         {/* Active Assignments List */}
         <div className="mb-8">

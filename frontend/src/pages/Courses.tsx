@@ -1,5 +1,5 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import axios from "axios"
 import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
@@ -9,7 +9,7 @@ import CourseCard from "../components/CourseCard"
 import Sidebar from "../components/Sidebar"
 import AddCourseModal from "../components/AddCourseModal"
 import EditCourseModal from "../components/EditCourseModal"
-import { Plus, Pencil, Trash2, BookOpen } from "lucide-react"
+import { Plus, Pencil, Trash2, BookOpen, Loader2 } from "lucide-react"
 import { useToast } from "../hooks/use-toast"
 import { Link } from "react-router-dom"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog"
@@ -35,9 +35,9 @@ type Course = {
 export default function Courses() {
   const [tab, setTab] = useState("active")
   const { token } = useAuth()
-  const { courses, setCourses, fetchCourses, activeCourses, completedCourses } = useCourses()
+  const { courses, setCourses, fetchCourses, activeCourses, completedCourses, isLoading, error } = useCourses()
   const [userGpa, setUserGpa] = useState<number | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isGpaLoading, setIsGpaLoading] = useState(false)
   const { toast } = useToast()
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -47,6 +47,9 @@ export default function Courses() {
   const navigate = useNavigate()
 
   const fetchUserGpa = async () => {
+    if (!token) return
+    
+    setIsGpaLoading(true)
     try {
       const res = await axios.get("https://scholarlog-api.onrender.com/api/user/gpa", {
         headers: { Authorization: `Bearer ${token}` },
@@ -54,13 +57,19 @@ export default function Courses() {
       setUserGpa(res.data.gpa)
     } catch (err) {
       console.error("Failed to fetch GPA", err)
+      toast({
+        title: "Error",
+        description: "Failed to load your GPA. Please try again later.",
+      })
+    } finally {
+      setIsGpaLoading(false)
     }
   }
 
   useEffect(() => {
     if (!token) return
     fetchUserGpa()
-  }, [token])
+  }, [token, courses]) // Re-fetch GPA when courses change
 
   const handleDelete = async (id: number) => {
     try {
@@ -128,21 +137,58 @@ export default function Courses() {
     }
   }
 
-  useEffect(() => {
-    if (!token) return
-    setIsLoading(true)
-    fetchCourses()
-      .then(() => setIsLoading(false))
-      .catch(() => setIsLoading(false))
-  }, [token])
+  // Memoize filtered courses based on tab and search query
+  const filtered = useMemo(() => {
+    const coursesToFilter = tab === "active" ? activeCourses : completedCourses;
+    if (!searchQuery.trim()) return coursesToFilter;
+    
+    const query = searchQuery.toLowerCase();
+    return coursesToFilter.filter(course => 
+      course.name.toLowerCase().includes(query)
+    );
+  }, [tab, activeCourses, completedCourses, searchQuery]);
 
-  const filtered = tab === "active" ? activeCourses : completedCourses
-
+  // Render loading state
   if (isLoading) {
     return (
-      <div className="w-full text-center py-10 text-muted-foreground">
-        Loading your courses...
-      </div>
+      <Sidebar>
+        <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-10">
+          <div className="p-6">
+            <h1 className="text-3xl font-bold mb-4">Your Courses</h1>
+            <div className="flex justify-center items-center h-64">
+              <div className="flex flex-col items-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="mt-4 text-muted-foreground">Loading your courses...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Sidebar>
+    )
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <Sidebar>
+        <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-10">
+          <div className="p-6">
+            <h1 className="text-3xl font-bold mb-4">Your Courses</h1>
+            <div className="flex justify-center items-center h-64">
+              <div className="flex flex-col items-center text-center">
+                <p className="text-red-500 font-medium">Error loading courses</p>
+                <p className="mt-2 text-muted-foreground max-w-md">We couldn't load your courses. Please try again later.</p>
+                <Button 
+                  className="mt-4" 
+                  onClick={() => fetchCourses()}
+                >
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Sidebar>
     )
   }
 
@@ -159,16 +205,28 @@ export default function Courses() {
                   <TabsTrigger value="active">Active</TabsTrigger>
                   <TabsTrigger value="completed">Completed</TabsTrigger>
                 </TabsList>
-                <AddCourseModal
-                  onCreate={handleCreate}
-                  trigger={
-                    <Button className="flex items-center gap-2">
-                      <Plus className="w-4 h-4" />
-                      Add Course
-                    </Button>
-                  }
-                  defaultActive={tab === "active"}
-                />
+                <div className="flex items-center gap-2">
+                  {/* Search input */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search courses..."
+                      className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <AddCourseModal
+                    onCreate={handleCreate}
+                    trigger={
+                      <Button className="flex items-center gap-2">
+                        <Plus className="w-4 h-4" />
+                        Add Course
+                      </Button>
+                    }
+                    defaultActive={tab === "active"}
+                  />
+                </div>
               </div>
 
               <TabsContent value={tab}>
