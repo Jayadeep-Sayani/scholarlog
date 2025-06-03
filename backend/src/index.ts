@@ -11,7 +11,15 @@ import userRoutes from "./routes/userRoutes"
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// Configure CORS
+app.use(cors({
+  origin: ["https://scholarlog.vercel.app", "http://localhost:3000"],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/courses", courseRoutes)
@@ -22,15 +30,7 @@ app.use('/api/upcoming-assignments', upcomingAssignmentRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     res.send('ScholarLog API running!');
-  });
-  
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-app.use(
-  cors({
-    origin: ["https://scholarlog.vercel.app"], // Add your actual Vercel domain here
-    credentials: true, // Optional, useful if using cookies/auth
-  })
-)
