@@ -105,9 +105,7 @@ export const verifyEmail = async (req: Request, res: Response): Promise<void> =>
     });
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, {
-      expiresIn: '1d',
-    });
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string);
 
     res.status(200).json({ 
       message: 'Email verified successfully',
@@ -181,9 +179,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, {
-      expiresIn: '1d',
-    });
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string);
 
     res.status(200).json({ 
       message: 'Login successful', 
