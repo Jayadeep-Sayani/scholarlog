@@ -1,4 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react"
+import axios, { AxiosError, AxiosResponse } from "axios"
+
+interface ErrorResponse {
+  error: string;
+}
 
 interface AuthContextType {
   token: string | null
@@ -20,6 +25,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(false); // mark as ready after checking localStorage
   }, []);
 
+  // Add axios interceptor to handle token expiration
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error: AxiosError<ErrorResponse>) => {
+        if (error.response?.status === 403 && error.response?.data?.error === 'Invalid or expired token') {
+          // Clear token and redirect to login
+          localStorage.removeItem("token");
+          setToken(null);
+          window.location.href = "/login";
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, []);
 
   const login = (newToken: string) => {
     localStorage.setItem("token", newToken)
