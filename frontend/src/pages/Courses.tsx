@@ -245,9 +245,10 @@ export default function Courses() {
                     {filtered.map((course) => (
                       <div
                         key={course.id}
+                        onClick={() => navigate(`/courses/${course.id}`)}
                         className={`bg-white rounded-xl shadow-sm overflow-hidden border ${
                           tab === "completed" ? "border-green-100" : "border-gray-100"
-                        } hover:shadow-md transition-shadow`}
+                        } hover:shadow-md transition-shadow cursor-pointer`}
                       >
                         <div className="p-6">
                           <div className="flex justify-between items-start mb-4">
@@ -257,7 +258,7 @@ export default function Courses() {
                                 {course.credits} Credit{course.credits !== 1 ? 's' : ''}
                               </p>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                               <Button
                                 className="p-2 hover:bg-gray-100"
                                 onClick={() => {
@@ -281,30 +282,21 @@ export default function Courses() {
                               </Button>
                             </div>
                           </div>
-                          <div className="flex items-center justify-between pt-4 border-t">
-                            {tab === "completed" ? (
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-green-600">
-                                  Final Grade: {course.grade?.toFixed(1) || 'N/A'}%
-                                </span>
-                              </div>
-                            ) : (
-                              <>
-                                <div className="flex items-center gap-2">
-                                  <BookOpen className="w-4 h-4 text-muted-foreground" />
-                                  <span className="text-sm text-muted-foreground">
-                                    {course.assignments?.length || 0} Assignment{course.assignments?.length !== 1 ? 's' : ''}
-                                  </span>
-                                </div>
-                                <Link
-                                  to={`/courses/${course.id}`}
-                                  className="text-sm font-medium text-blue-600 hover:text-blue-700"
-                                >
-                                  View Details →
-                                </Link>
-                              </>
-                            )}
-                          </div>
+                          
+                          {tab === "completed" ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-green-600">
+                                Final Grade: {course.grade?.toFixed(1) || 'N/A'}%
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <BookOpen className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {course.assignments?.length || 0} Assignment{course.assignments?.length !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
