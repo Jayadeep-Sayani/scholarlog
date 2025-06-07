@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAuth } from "../context/AuthContext"
 import { useCourses } from "../context/CourseContext"
-import axios from "axios"
+import { useUser } from "../context/UserContext"
 import { Button } from "../components/ui/button"
-import { LayoutDashboard, BookOpen, Settings, ClipboardList, LogOut, Heart, Cog } from "lucide-react" // Added Heart icon and Cog for settings
+import { LayoutDashboard, BookOpen, Settings, ClipboardList, LogOut, Heart, Cog } from "lucide-react"
 import { Avatar, AvatarFallback } from "../components/ui/avatar"
 import {
     Accordion,
@@ -25,24 +25,13 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     const { pathname } = useLocation()
     const { token, logout } = useAuth()
     const { activeCourses } = useCourses()
+    const { userData } = useUser()
     const navigate = useNavigate()
-    const [user, setUser] = useState("")
     const [isCoursesOpen, setIsCoursesOpen] = useState(() => {
         const saved = localStorage.getItem('coursesMenuOpen')
         return saved ? JSON.parse(saved) : false
     })
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-
-    useEffect(() => {
-        if (!token) return
-        axios
-            .get("https://scholarlog-api.onrender.com/api/auth/me", {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((res) => {
-                setUser(res.data.user.email)
-            })
-    }, [token])
 
     // Save isCoursesOpen to localStorage whenever it changes
     useEffect(() => {
@@ -52,99 +41,103 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     const isActive = (path: string) => pathname === path
 
     return (
-        <div className="flex h-screen overflow-hidden">
-            {/* Sidebar */}
-            <aside className="w-64 bg-white border-r px-4 py-6 flex flex-col fixed h-screen">
-                <div className="flex-grow space-y-4">
-                    <div className="text-2xl font-extrabold mb-4 ml-4">ScholarLog</div>
-
-                    <nav className="space-y-2 text-sm">
-                        <Link
-                            to="/dashboard"
-                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/dashboard") ? "bg-gray-200" : "hover:bg-gray-100"
-                                }`}
-                        >
-                            <LayoutDashboard className="w-4 h-4 mr-4" />
-                            Dashboard
-                        </Link>
-
-                        <Link
-                            to="/courses"
-                            className={`flex items-center gap-2 px-3 py-2 rounded-md ${isActive("/courses") ? "bg-gray-200" : "hover:bg-gray-100"
-                                }`}
-                        >
-                            <BookOpen className="w-4 h-4 mr-4" />
-                            Courses
-                        </Link>
-
-                        <Link
-                            to="/assignments"
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 ${
-                                pathname === "/assignments" ? "bg-gray-100" : ""
-                            }`}
-                        >
-                            <ClipboardList className="w-4 h-4 mr-4" />
-                            Tasks
-                        </Link>
-
-                        <Link
-                            to="/tip-jar"
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 ${
-                                pathname === "/tip-jar" ? "bg-gray-100" : ""
-                            }`}
-                        >
-                            <Heart className="w-4 h-4 mr-4" />
-                            Tip Jar
-                        </Link>
-
-                        <Link
-                            to="/settings"
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 ${
-                                pathname === "/settings" ? "bg-gray-100" : ""
-                            }`}
-                        >
-                            <Cog className="w-4 h-4 mr-4" />
-                            Settings
-                        </Link>
-                    </nav>
+        <div className="flex h-screen bg-gray-50">
+            <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+                <div className="p-4">
+                    <Link to="/dashboard" className="text-2xl font-bold text-gray-900">
+                        ScholarLog
+                    </Link>
                 </div>
 
-                {/* Logout Confirmation Modal */}
-                <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Confirm Logout</DialogTitle>
-                        </DialogHeader>
-                        <p>Are you sure you want to logout?</p>
-                        <DialogFooter>
-                            <Button onClick={() => setShowLogoutConfirm(false)}>
-                                Cancel
-                            </Button>
-                            <Button 
-                                className="bg-red-500 hover:bg-red-600"
-                                onClick={() => {
-                                    logout()
-                                    navigate("/login")
-                                }}
-                            >
-                                Logout
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                <nav className="flex-1 px-2 py-4 space-y-1">
+                    <Link
+                        to="/dashboard"
+                        className={`flex items-center px-3 py-2 rounded-md ${
+                            isActive("/dashboard")
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50"
+                        }`}
+                    >
+                        <LayoutDashboard className="w-5 h-5 mr-3" />
+                        Dashboard
+                    </Link>
 
-                {/* Avatar Section Stuck to Bottom */}
+                    <Accordion
+                        type="single"
+                        collapsible
+                        value={isCoursesOpen ? "courses" : undefined}
+                        onValueChange={(value) => setIsCoursesOpen(value === "courses")}
+                    >
+                        <AccordionItem value="courses" className="border-none">
+                            <AccordionTrigger className="px-3 py-2 hover:bg-gray-50 rounded-md">
+                                <div className="flex items-center">
+                                    <BookOpen className="w-5 h-5 mr-3" />
+                                    <span>Courses</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="pl-8 space-y-1">
+                                <Link
+                                    to="/courses"
+                                    className={`block px-3 py-2 rounded-md ${
+                                        isActive("/courses")
+                                            ? "bg-gray-100 text-gray-900"
+                                            : "text-gray-600 hover:bg-gray-50"
+                                    }`}
+                                >
+                                    All Courses
+                                </Link>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+
+                    <Link
+                        to="/assignments"
+                        className={`flex items-center px-3 py-2 rounded-md ${
+                            isActive("/assignments")
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50"
+                        }`}
+                    >
+                        <ClipboardList className="w-5 h-5 mr-3" />
+                        Assignments
+                    </Link>
+
+                    <Link
+                        to="/settings"
+                        className={`flex items-center px-3 py-2 rounded-md ${
+                            isActive("/settings")
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50"
+                        }`}
+                    >
+                        <Settings className="w-5 h-5 mr-3" />
+                        Settings
+                    </Link>
+
+                    <Link
+                        to="/tip-jar"
+                        className={`flex items-center px-3 py-2 rounded-md ${
+                            isActive("/tip-jar")
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50"
+                        }`}
+                    >
+                        <Heart className="w-5 h-5 mr-3" />
+                        Tip Jar
+                    </Link>
+                </nav>
+
                 {token && (
                     <div className="mt-6 space-y-4">
                         <div className="flex items-center gap-3 p-3 border bg-muted">
                             <Avatar className="h-8 w-8 bg-gray-200 text-center text-sm font-bold">
                                 <AvatarFallback>
-                                    {user && user.length > 0 ? user[0].toUpperCase() : "U"}
+                                    {userData?.email && userData.email.length > 0 ? userData.email[0].toUpperCase() : "U"}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col text-sm">
                                 <span className="font-semibold text-foreground truncate text-[0.65rem]">
-                                    {user || "User"}
+                                    {userData?.email || "User"}
                                 </span>
                                 <span className="text-muted-foreground text-xs">
                                     {activeCourses.length} active course
@@ -166,6 +159,33 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
             {/* Main Content */}
             <main className="flex-1 bg-gray-50 ml-64 overflow-y-auto h-screen">{children}</main>
+
+            <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Confirm Logout</DialogTitle>
+                    </DialogHeader>
+                    <p>Are you sure you want to logout?</p>
+                    <DialogFooter>
+                        <Button 
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-900" 
+                            onClick={() => setShowLogoutConfirm(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                            onClick={() => {
+                                logout()
+                                setShowLogoutConfirm(false)
+                                navigate("/login")
+                            }}
+                        >
+                            Logout
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
