@@ -52,51 +52,34 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 <nav className="flex-1 px-2 py-4 space-y-1">
                     <Link
                         to="/dashboard"
-                        className={`flex items-center px-3 py-2 rounded-md ${
-                            isActive("/dashboard")
+                        className={`flex items-center px-3 py-2 rounded-md ${isActive("/dashboard")
                                 ? "bg-gray-100 text-gray-900"
                                 : "text-gray-600 hover:bg-gray-50"
-                        }`}
+                            }`}
                     >
                         <LayoutDashboard className="w-5 h-5 mr-3" />
                         Dashboard
                     </Link>
 
-                    <Accordion
-                        type="single"
-                        collapsible
-                        value={isCoursesOpen ? "courses" : undefined}
-                        onValueChange={(value) => setIsCoursesOpen(value === "courses")}
+
+                    <Link
+                        to="/courses"
+                        className={`block px-3 py-2 rounded-md ${isActive("/courses")
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50"
+                            }`}
                     >
-                        <AccordionItem value="courses" className="border-none">
-                            <AccordionTrigger className="px-3 py-2 hover:bg-gray-50 rounded-md">
-                                <div className="flex items-center">
-                                    <BookOpen className="w-5 h-5 mr-3" />
-                                    <span>Courses</span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="pl-8 space-y-1">
-                                <Link
-                                    to="/courses"
-                                    className={`block px-3 py-2 rounded-md ${
-                                        isActive("/courses")
-                                            ? "bg-gray-100 text-gray-900"
-                                            : "text-gray-600 hover:bg-gray-50"
-                                    }`}
-                                >
-                                    All Courses
-                                </Link>
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
+                        <BookOpen className="w-5 h-5 mr-3" />
+                        Courses
+                    </Link>
+
 
                     <Link
                         to="/assignments"
-                        className={`flex items-center px-3 py-2 rounded-md ${
-                            isActive("/assignments")
+                        className={`flex items-center px-3 py-2 rounded-md ${isActive("/assignments")
                                 ? "bg-gray-100 text-gray-900"
                                 : "text-gray-600 hover:bg-gray-50"
-                        }`}
+                            }`}
                     >
                         <ClipboardList className="w-5 h-5 mr-3" />
                         Assignments
@@ -104,11 +87,10 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
                     <Link
                         to="/settings"
-                        className={`flex items-center px-3 py-2 rounded-md ${
-                            isActive("/settings")
+                        className={`flex items-center px-3 py-2 rounded-md ${isActive("/settings")
                                 ? "bg-gray-100 text-gray-900"
                                 : "text-gray-600 hover:bg-gray-50"
-                        }`}
+                            }`}
                     >
                         <Settings className="w-5 h-5 mr-3" />
                         Settings
@@ -116,11 +98,10 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
                     <Link
                         to="/tip-jar"
-                        className={`flex items-center px-3 py-2 rounded-md ${
-                            isActive("/tip-jar")
+                        className={`flex items-center px-3 py-2 rounded-md ${isActive("/tip-jar")
                                 ? "bg-gray-100 text-gray-900"
                                 : "text-gray-600 hover:bg-gray-50"
-                        }`}
+                            }`}
                     >
                         <Heart className="w-5 h-5 mr-3" />
                         Tip Jar
@@ -167,8 +148,8 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                     </DialogHeader>
                     <p>Are you sure you want to logout?</p>
                     <DialogFooter>
-                        <Button 
-                            className="bg-gray-100 hover:bg-gray-200 text-gray-900" 
+                        <Button
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-900"
                             onClick={() => setShowLogoutConfirm(false)}
                         >
                             Cancel
