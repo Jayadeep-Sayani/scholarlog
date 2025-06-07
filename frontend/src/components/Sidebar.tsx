@@ -64,7 +64,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
                     <Link
                         to="/courses"
-                        className={`block px-3 py-2 rounded-md ${isActive("/courses")
+                        className={`flex items-center px-3 py-2 rounded-md ${isActive("/courses")
                                 ? "bg-gray-100 text-gray-900"
                                 : "text-gray-600 hover:bg-gray-50"
                             }`}
