@@ -158,7 +158,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 bg-gray-50 ml-64 overflow-y-auto h-screen">{children}</main>
+            <main className="flex-1 bg-gray-50 overflow-y-auto h-screen">{children}</main>
 
             <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
                 <DialogContent>
