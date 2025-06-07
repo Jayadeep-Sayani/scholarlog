@@ -98,20 +98,14 @@ export default function Dashboard() {
           </Link>
         </div>
         
-        <div className="bg-gradient-to-b from-primary-50 to-white min-h-screen">
-          <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl shadow p-4 border border-primary-100">
-                <h3 className="text-lg font-display font-semibold mb-4 text-primary-900">GPA Trend</h3>
-                <GpaTrendChart data={gpaHistory} scaleType={scaleType} />
-              </div>
-
-              <div className="bg-white rounded-xl shadow p-4 border border-primary-100">
-                <h3 className="text-lg font-display font-semibold mb-4 text-primary-900">Assignment Status Overview</h3>
-                <AssignmentStats />
-              </div>
-            </div>
-          </div>
+        <div className="bg-white rounded-xl shadow p-4">
+          <h3 className="text-lg font-semibold mb-4">GPA Trend</h3>
+          <GpaTrendChart data={gpaHistory} scaleType={scaleType} />
+        </div>
+        
+        <div className="bg-white rounded-xl shadow p-4">
+          <h3 className="text-lg font-semibold mb-4">Assignment Status Overview</h3>
+          <AssignmentStats />
         </div>
       </div>
     </Sidebar>

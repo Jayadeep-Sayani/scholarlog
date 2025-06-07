@@ -87,11 +87,10 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
                     <Link
                         to="/settings"
-                        className={`flex items-center px-3 py-2 rounded-md ${
-                            isActive("/settings")
-                                ? "bg-primary-100 text-primary-900"
-                                : "text-primary-600 hover:bg-primary-50"
-                        }`}
+                        className={`flex items-center px-3 py-2 rounded-md ${isActive("/settings")
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50"
+                            }`}
                     >
                         <Settings className="w-5 h-5 mr-3" />
                         Settings
@@ -99,11 +98,10 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
                     <Link
                         to="/tip-jar"
-                        className={`flex items-center px-3 py-2 rounded-md ${
-                            isActive("/tip-jar")
-                                ? "bg-primary-100 text-primary-900"
-                                : "text-primary-600 hover:bg-primary-50"
-                        }`}
+                        className={`flex items-center px-3 py-2 rounded-md ${isActive("/tip-jar")
+                                ? "bg-gray-100 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-50"
+                            }`}
                     >
                         <Heart className="w-5 h-5 mr-3" />
                         Tip Jar

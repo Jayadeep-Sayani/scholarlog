@@ -27,7 +27,7 @@ export default function GpaTrendChart({ data, scaleType = 'uvic9' }: Props) {
     }, [data]);
 
     return (
-        <div className="bg-white rounded-xl shadow p-4 w-full border border-primary-100">
+        <div className="bg-white rounded-xl shadow p-4 w-full">
             <div className="relative">
                 <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={chartData}>
@@ -45,21 +45,21 @@ export default function GpaTrendChart({ data, scaleType = 'uvic9' }: Props) {
                             style={{ fontSize: "12px" }}
                         />
                         <Tooltip
-                            contentStyle={{ backgroundColor: "#fff", border: "1px solid #e0f2fe" }}
-                            labelStyle={{ color: "#0c4a6e", fontWeight: 500 }}
+                            contentStyle={{ backgroundColor: "#fff", border: "1px solid #ccc" }}
+                            labelStyle={{ color: "#333", fontWeight: 500 }}
                         />
                         <Line
                             dataKey="gpa"
-                            stroke="#0ea5e9"
+                            stroke="#6366f1"
                             strokeWidth={2}
-                            dot={{ r: 4, fill: "#0ea5e9" }}
-                            activeDot={{ r: 6, fill: "#0284c7" }}
+                            dot={{ r: 4 }}
+                            activeDot={{ r: 6 }}
                         />
                     </LineChart>
                 </ResponsiveContainer>
                 
                 {data.length < 2 && (
-                    <div className="absolute inset-0 bg-primary-900 bg-opacity-60 flex flex-col items-center justify-center text-white rounded-md">
+                    <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-white rounded-md">
                         <div className="text-center p-4 max-w-xs">
                             <p className="text-sm font-medium">Add at least 2 completed courses to view your actual GPA trendline</p>
                         </div>
