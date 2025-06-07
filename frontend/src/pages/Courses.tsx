@@ -245,15 +245,15 @@ export default function Courses() {
                     {filtered.map((course) => (
                       <div
                         key={course.id}
-                        onClick={() => navigate(`/courses/${course.id}`)}
+                        onClick={() => tab === "active" && navigate(`/courses/${course.id}`)}
                         className={`bg-white rounded-xl shadow-sm overflow-hidden border ${
                           tab === "completed" ? "border-green-100" : "border-gray-100"
-                        } hover:shadow-md transition-shadow cursor-pointer group`}
+                        } ${tab === "active" ? "hover:shadow-md cursor-pointer group" : ""} transition-shadow`}
                       >
                         <div className="p-6">
                           <div className="flex justify-between items-start mb-4">
                             <div>
-                              <h3 className="text-xl font-semibold text-gray-900 group-hover:underline">{course.name}</h3>
+                              <h3 className={`text-xl font-semibold text-gray-900 ${tab === "active" ? "group-hover:underline" : ""}`}>{course.name}</h3>
                               <p className="text-sm text-muted-foreground mt-1">
                                 {course.credits} Credit{course.credits !== 1 ? 's' : ''}
                               </p>
